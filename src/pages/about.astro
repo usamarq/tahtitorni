@@ -1,0 +1,129 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHeader from '../components/PageHeader.astro';
+import Portrait from '../components/Portrait.astro';
+import { socials } from '../data/site';
+import { cvInterests } from '../data/cv';
+
+const elsewhere = socials.filter((s) => ['GitHub', 'LinkedIn', 'Instagram', 'Twitter'].includes(s.label));
+---
+
+<Base
+  title="About · Usama Raheel"
+  description="Four years in industry, then an MSc in AI at the University of Oulu. Retrieval-augmented LLM systems, careful evaluation, and life at 65°N."
+>
+  <PageHeader sky label="About" title="The longer <em>story</em>" />
+
+  <div class="wrap layout">
+    <div class="story">
+      <p>
+        I came to machine learning through industry rather than straight through school. After a
+        BSc in Electrical Engineering at FAST-NUCES, four years of building: application
+        consulting at Techlogix, where I contributed to a digital lending platform for banks
+        across Pakistan; software development at GrocerApp; and technical project management at
+        ZeePalm, running project lifecycles and giving technical direction on machine learning
+        and web work.
+      </p>
+      <p>
+        In 2024 I moved to Oulu, Finland, for the MSc in Computer Science and Engineering at the
+        University of Oulu, on the Artificial Intelligence track: machine vision, deep learning,
+        NLP, LLMs. It finished in July 2026 with a thesis at Valamis, building and evaluating a
+        retrieval-augmented LLM assistant for their corporate learning platform. The thesis is
+        <a href="https://oulurepo.oulu.fi/handle/10024/63278" target="_blank" rel="noopener">open access</a>.
+      </p>
+      <p>
+        The thread through the recent work is evaluation. A retrieval pipeline is easy to demo
+        and hard to trust, and the part I find most interesting is knowing whether it actually
+        works: LLM-as-judge setups validated against human ratings, retrieval metrics reported
+        plainly, baselines that are allowed to win. That mindset carried the thesis, the recipe
+        retrieval project, and the railway delays paper.
+      </p>
+      <p>
+        Home base is Oulu, 65°N. I have been learning Finnish alongside the degree, 15 ECTS of
+        it so far. Around the studies I volunteer at the city's startup and research events:
+        Polar Bear Pitching, Techstars Startup Weekend Oulu, the ECSA2026 and AIS25 conferences.
+      </p>
+      <p>
+        Right now I am looking for AI/ML engineering, data science and research roles. The
+        fastest way to reach me is email.
+      </p>
+      <div class="ctas">
+        <a class="btn" href="mailto:usamarq10fi@gmail.com">Email me</a>
+        <a class="btn ghost" href="/cv">Read the CV</a>
+      </div>
+    </div>
+
+    <aside class="facts">
+      <Portrait size={150} />
+      <dl>
+        <div>
+          <dt>Location</dt>
+          <dd>Oulu, Finland · 65°N</dd>
+        </div>
+        <div>
+          <dt>Languages</dt>
+          <dd>English C2 · Finnish A2.1 · Urdu native</dd>
+        </div>
+        <div>
+          <dt>Open to</dt>
+          <dd>AI/ML engineering · data science · research</dd>
+        </div>
+        <div>
+          <dt>Off hours</dt>
+          <dd>{cvInterests.join(' · ')}</dd>
+        </div>
+        <div>
+          <dt>Elsewhere</dt>
+          <dd class="links">
+            {elsewhere.map((s) => (
+              <a href={s.href} target="_blank" rel="me noopener">{s.label}</a>
+            ))}
+          </dd>
+        </div>
+      </dl>
+    </aside>
+  </div>
+</Base>
+
+<style>
+  .layout {
+    display: grid;
+    grid-template-columns: 1fr 260px;
+    gap: 70px;
+    padding-top: 40px;
+    padding-bottom: 20px;
+  }
+  .story p { color: var(--muted); font-size: 16px; line-height: 1.8; margin-bottom: 20px; max-width: 62ch; font-variant-numeric: oldstyle-nums; }
+  .story > p:first-of-type::first-letter {
+    font-family: var(--ff-serif);
+    font-style: italic;
+    font-size: 3.05em;
+    line-height: 0.85;
+    float: left;
+    color: var(--brass);
+    margin: 5px 10px 0 0;
+  }
+  .story a { color: var(--ink); border-bottom: 1px solid var(--hairline); }
+  .story a:hover { color: var(--brass); border-color: var(--brass-line); }
+  .ctas { display: flex; gap: 16px; margin-top: 34px; flex-wrap: wrap; }
+
+  .facts :global(.portrait) { margin-bottom: 26px; }
+  .facts dl { display: flex; flex-direction: column; gap: 18px; }
+  .facts dt {
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--faint);
+    margin-bottom: 4px;
+  }
+  .facts dt::before { content: '✦ '; color: var(--brass); }
+  .facts dd { color: var(--muted); font-size: 14px; line-height: 1.6; }
+  .facts .links { display: flex; gap: 14px; flex-wrap: wrap; }
+  .facts .links a { color: var(--muted); border-bottom: 1px solid var(--hairline); padding-bottom: 1px; font-size: 13.5px; }
+  .facts .links a:hover { color: var(--brass); border-color: var(--brass-line); }
+
+  @media (max-width: 860px) {
+    .layout { grid-template-columns: 1fr; gap: 50px; padding-top: 28px; }
+    .facts { border-top: 1px solid var(--hairline); padding-top: 36px; }
+  }
+</style>

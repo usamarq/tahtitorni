@@ -1,0 +1,43 @@
+---
+import Sky from './Sky.astro';
+
+interface Props {
+  label: string;
+  title: string; // may contain <em> for the italic display word
+  lede?: string;
+  count?: string;
+  sky?: boolean;
+}
+const { label, title, lede, count, sky = false } = Astro.props;
+---
+
+<div class="zone">
+  {sky && <Sky density={11} fade="bottom" />}
+  <header class="wrap head">
+    <p class="sec-label">{label}{count && <span class="count">{count}</span>}</p>
+    <hr class="sec-rule" />
+    <h1 set:html={title} />
+    {lede && <p class="lede">{lede}</p>}
+  </header>
+</div>
+
+<style>
+  .zone { position: relative; overflow: hidden; }
+  .head { position: relative; z-index: 1; padding-top: 56px; }
+  h1 {
+    font-family: var(--ff-serif);
+    font-size: clamp(38px, 6vw, 58px);
+    font-weight: 500;
+    letter-spacing: 0.005em;
+    line-height: 1.1;
+    margin: 20px 0 14px;
+  }
+  h1 :global(em) {
+    font-style: italic;
+    font-weight: 440;
+  }
+  .lede { color: var(--muted); max-width: 62ch; font-size: 16.5px; }
+  @media (max-width: 760px) {
+    .head { padding-top: 36px; }
+  }
+</style>

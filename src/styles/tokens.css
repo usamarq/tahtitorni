@@ -1,0 +1,58 @@
+/* Design tokens: direction C3 "observatory". Dark is the site's home theme;
+   light is the derived "day star chart". Toggle stamps data-theme on <html>
+   and must win over the OS preference in both directions. */
+
+:root {
+  --accent-h: 42;
+  --brass-s: 52%;
+  --brass-l: 56%;
+  --brass: hsl(var(--accent-h) var(--brass-s) var(--brass-l));
+  --brass-dim: hsl(var(--accent-h) var(--brass-s) var(--brass-l) / 0.13);
+  --brass-line: hsl(var(--accent-h) var(--brass-s) var(--brass-l) / 0.45);
+  --bg: #0d1220;
+  --bg-deep: #0b0f1b;
+  --panel: #111729;
+  --hairline: #212a44;
+  --ink: #e9e5da;
+  --muted: #98a0b4;
+  --faint: #7e88a0; /* AA (4.5+) on --bg and --bg-deep */
+  --sky-star: 210, 222, 244;
+  --sky-line: 143, 168, 216;
+  --ff-serif: 'Newsreader Variable', Georgia, 'Times New Roman', serif;
+  --ff-sans: 'IBM Plex Sans Variable', 'Segoe UI', system-ui, sans-serif;
+  --ff-mono: 'JetBrains Mono Variable', 'Cascadia Code', Consolas, monospace;
+  color-scheme: dark;
+}
+
+/* Dark is the default regardless of OS preference; light is an explicit
+   choice via the nav toggle (data-theme="light"). */
+
+:root[data-theme='dark'] {
+  --brass-s: 52%;
+  --brass-l: 56%;
+  --bg: #0d1220;
+  --bg-deep: #0b0f1b;
+  --panel: #111729;
+  --hairline: #212a44;
+  --ink: #e9e5da;
+  --muted: #98a0b4;
+  --faint: #7e88a0;
+  --sky-star: 210, 222, 244;
+  --sky-line: 143, 168, 216;
+  color-scheme: dark;
+}
+
+:root[data-theme='light'] {
+  --brass-s: 60%;
+  --brass-l: 32%; /* AA for small mono metrics on the paper bg */
+  --bg: #f4f1e8;
+  --bg-deep: #ede9dc;
+  --panel: #ebe6d8;
+  --hairline: #d8d1bd;
+  --ink: #242b3f;
+  --muted: #545d73;
+  --faint: #666b7a; /* AA (4.5+) on --bg */
+  --sky-star: 46, 58, 92;
+  --sky-line: 70, 86, 128;
+  color-scheme: light;
+}

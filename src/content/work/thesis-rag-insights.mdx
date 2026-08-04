@@ -1,0 +1,46 @@
+---
+title: 'Context-Aware Insight Generation via RAG'
+kind: 'MSc thesis'
+group: 'rag-llm'
+org: 'Valamis Group / Univ. of Oulu'
+dates: 'Dec 2025 - Jul 2026'
+order: 1
+blurb: 'A RAG assistant for Valamis, turning corporate learning data into business insights: hybrid retrieval, two LLM judges validated against human ratings, delivered to the development environment.'
+metrics: '82.7% answer quality · +13.6 pts over baseline · MRR 0.96 · P@1 0.93'
+links:
+  - label: 'Thesis, open access'
+    href: 'https://oulurepo.oulu.fi/handle/10024/63278'
+toy: 'optimizer'
+---
+
+*Enhancing Context-Aware Insight Generation in Corporate Learning Platforms via
+Retrieval-Augmented Language Models.* University of Oulu, 2026.
+
+My Master's thesis, done at Valamis: a context-aware AI assistant for the
+company's learning platform. It uses retrieval-augmented generation to ground an
+LLM in domain knowledge, so that automated reporting and business-intelligence
+queries over corporate learning and engagement data come back with answers that
+hold up.
+
+## The system
+
+A hybrid retrieval pipeline feeds the assistant: deterministic column mapping,
+intent detection, and dense semantic search over a 37-document knowledge base,
+integrated into the platform's existing OpenAI Assistants API workflow.
+
+## The evaluation
+
+The part I care most about. I built two LLM-based evaluators, an answer-quality
+judge and a retrieval-relevance labeller, and validated both against human
+ratings before trusting either.
+
+With that in place: overall answer quality reached 82.7%, a +13.6-point gain
+over the manual baseline, and the hardest business-strategy questions went from
+34.7% to 76.7%. The deployed retrieval pipeline reached MRR 0.96 and
+Precision@1 0.93.
+
+I delivered the validated system to Valamis's development environment, working
+across AI, product and platform teams to align the outcomes with the product
+roadmap. The thesis was assessed at 5, on a scale where 5 is the highest grade.
+
+The code is private under an NDA. The thesis itself is open access.

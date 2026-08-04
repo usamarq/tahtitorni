@@ -1,0 +1,27 @@
+---
+interface Props {
+  size?: number;
+  src?: string;
+}
+const { size = 92, src = '/images/portrait.jpg' } = Astro.props;
+---
+
+<img
+  class="portrait"
+  src={src}
+  width={size}
+  height={size}
+  alt="Portrait of Usama Raheel"
+  loading="eager"
+/>
+
+<style>
+  .portrait {
+    border-radius: 50%;
+    border: 1px solid var(--brass-line);
+    outline: 1px solid var(--hairline);
+    outline-offset: 5px;
+    object-fit: cover;
+    background: var(--panel);
+  }
+</style>

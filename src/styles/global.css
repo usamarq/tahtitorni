@@ -1,0 +1,418 @@
+@import './tokens.css';
+@import 'tailwindcss';
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-bg-deep: var(--bg-deep);
+  --color-panel: var(--panel);
+  --color-hairline: var(--hairline);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-faint: var(--faint);
+  --color-brass: var(--brass);
+  --font-serif: var(--ff-serif);
+  --font-sans: var(--ff-sans);
+  --font-mono: var(--ff-mono);
+}
+
+html {
+  background: var(--bg);
+  overflow-x: hidden;
+}
+
+body {
+  background: linear-gradient(to bottom, var(--bg-deep) 0%, var(--bg) 30%);
+  color: var(--ink);
+  font-family: var(--ff-sans);
+  font-size: 16px;
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+main { flex: 1; }
+
+img { max-width: 100%; }
+
+a { color: var(--ink); text-decoration: none; }
+a:hover { color: var(--brass); }
+
+::selection { background: var(--brass-dim); color: var(--brass); }
+
+a:focus-visible,
+button:focus-visible,
+input:focus-visible {
+  outline: 2px solid var(--brass);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+h1, h2, h3, h4 { text-wrap: balance; font-optical-sizing: auto; }
+h1 em { font-style: italic; font-weight: 440; }
+
+/* film grain: a fixed, tiled noise wash so the dark reads as night, not hex */
+.grain {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E");
+  opacity: 0.045;
+}
+:root[data-theme='light'] .grain { opacity: 0.06; }
+
+/* shared layout helpers */
+.wrap { width: 100%; max-width: 1000px; margin: 0 auto; padding: 0 28px; }
+
+.sec-label {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  font-size: 12px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+.sec-label::before {
+  content: '✦';
+  color: var(--brass);
+  letter-spacing: 0;
+  text-shadow: 0 0 9px hsl(var(--accent-h) 60% 60% / 0.5);
+}
+.sec-label .count {
+  margin-left: auto;
+  font-family: var(--ff-mono);
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--faint);
+  font-size: 12px;
+}
+/* graduated rule: a chart divider with tick marks under the hairline */
+.sec-rule {
+  border: 0;
+  border-top: 1px solid var(--hairline);
+  height: 5px;
+  background-image: repeating-linear-gradient(
+    to right,
+    var(--hairline) 0 1px,
+    transparent 1px 64px
+  );
+  background-size: 100% 4px;
+  background-repeat: no-repeat;
+  margin-bottom: 10px;
+}
+
+.btn {
+  display: inline-block;
+  font-size: 12.5px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  padding: 12px 24px;
+  border: 1px solid var(--brass-line);
+  color: var(--brass);
+  border-radius: 2px;
+  transition: background 0.15s ease;
+}
+.btn:hover {
+  background: var(--brass-dim);
+  color: var(--brass);
+  box-shadow: 0 0 18px hsl(var(--accent-h) 55% 55% / 0.14);
+}
+.btn.ghost { border-color: var(--hairline); color: var(--muted); }
+.btn.ghost:hover { color: var(--ink); background: transparent; border-color: var(--faint); }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    transition: none !important;
+    animation: none !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ---- wide desktops: the margins get to work ---- */
+
+/* ambient margin sky: one ultra-sparse fixed canvas, masked away from the
+   text column so the gutters carry faint roaming constellations */
+.margin-sky { display: none; }
+@media (min-width: 1440px) {
+  .margin-sky {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    opacity: 0.55;
+    -webkit-mask-image: linear-gradient(
+      to right,
+      black calc(50% - 630px),
+      transparent calc(50% - 545px),
+      transparent calc(50% + 545px),
+      black calc(50% + 630px)
+    );
+    mask-image: linear-gradient(
+      to right,
+      black calc(50% - 630px),
+      transparent calc(50% - 545px),
+      transparent calc(50% + 545px),
+      black calc(50% + 630px)
+    );
+  }
+}
+
+/* declination ruler: a thin graduated scale on the right that tracks scroll
+   from the pole (+90°) down toward the local horizon (+65°). Built by
+   delights.ts only when the viewport is wide enough. */
+.decl {
+  position: fixed;
+  right: 22px;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 58vh;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 9px;
+  pointer-events: none;
+  font-family: var(--ff-mono);
+  font-size: 9.5px;
+  letter-spacing: 0.08em;
+  color: var(--faint);
+}
+.decl .d-rail {
+  position: relative;
+  flex: 1;
+  width: 9px;
+  background-image:
+    linear-gradient(var(--hairline), var(--hairline)),
+    repeating-linear-gradient(to bottom, var(--hairline) 0 1px, transparent 1px 13px);
+  background-size: 1px 100%, 7px 100%;
+  background-position: right center, right center;
+  background-repeat: no-repeat;
+}
+.decl .d-dot {
+  position: absolute;
+  right: -2.5px;
+  top: 0;
+  width: 6px;
+  height: 6px;
+  margin-top: -3px;
+  border-radius: 50%;
+  background: var(--brass);
+  box-shadow: 0 0 9px hsl(var(--accent-h) 60% 60% / 0.65);
+}
+
+/* wide-viewport type bump: reading sizes only; chrome and metadata stay */
+@media (min-width: 1600px) {
+  body { font-size: 17.5px; }
+}
+
+/* ---- ⌘K palette, toast, confetti ---- */
+.cmdk { position: fixed; inset: 0; z-index: 65; }
+.cmdk[hidden] { display: none; }
+.cmdk-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgb(4 7 15 / 0.55);
+  -webkit-backdrop-filter: blur(3px);
+  backdrop-filter: blur(3px);
+}
+:root[data-theme='light'] .cmdk-backdrop { background: rgb(48 44 30 / 0.28); }
+.cmdk-panel {
+  position: relative;
+  margin: 12vh auto 0;
+  width: min(560px, calc(100% - 40px));
+  background: var(--panel);
+  border: 1px solid var(--hairline);
+  border-radius: 6px;
+  box-shadow:
+    0 24px 80px rgb(0 0 0 / 0.5),
+    0 0 40px hsl(var(--accent-h) 52% 56% / 0.08);
+  overflow: hidden;
+}
+.cmdk-top { display: flex; gap: 12px; align-items: center; padding: 14px 16px; border-bottom: 1px solid var(--hairline); }
+.cmdk-top i {
+  color: var(--brass);
+  font-style: normal;
+  text-shadow: 0 0 9px hsl(var(--accent-h) 60% 60% / 0.5);
+}
+/* 16px so iOS does not zoom the page when the input focuses */
+.cmdk-top input { flex: 1; background: none; border: 0; outline: none; color: var(--ink); font-family: var(--ff-sans); font-size: 16px; }
+.cmdk-top input::placeholder { color: var(--faint); }
+.cmdk-list { list-style: none; margin: 0; padding: 6px; max-height: 336px; overflow-y: auto; }
+.cmdk-list li {
+  display: flex;
+  gap: 10px;
+  align-items: baseline;
+  padding: 9px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  color: var(--muted);
+  font-size: 14px;
+}
+.cmdk-list li i { color: var(--brass); font-style: normal; font-size: 11px; opacity: 0; }
+.cmdk-list li .k {
+  margin-left: auto;
+  font-family: var(--ff-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--faint);
+  white-space: nowrap;
+}
+.cmdk-list li[aria-selected='true'] { background: var(--brass-dim); color: var(--ink); }
+.cmdk-list li[aria-selected='true'] i { opacity: 1; }
+.cmdk-list li.none { color: var(--faint); cursor: default; font-family: var(--ff-mono); font-size: 12.5px; }
+.cmdk-foot { padding: 8px 16px; border-top: 1px solid var(--hairline); font-family: var(--ff-mono); font-size: 11px; color: var(--faint); }
+
+/* ---- the observatory assistant ---- */
+.ask { position: fixed; inset: 0; z-index: 66; }
+.ask[hidden] { display: none; }
+.ask-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgb(4 7 15 / 0.55);
+  -webkit-backdrop-filter: blur(3px);
+  backdrop-filter: blur(3px);
+}
+:root[data-theme='light'] .ask-backdrop { background: rgb(48 44 30 / 0.28); }
+.ask-panel {
+  position: relative;
+  margin: 9vh auto 0;
+  width: min(640px, calc(100% - 40px));
+  display: flex;
+  flex-direction: column;
+  max-height: 78vh;
+  background: var(--panel);
+  border: 1px solid var(--hairline);
+  border-radius: 6px;
+  box-shadow:
+    0 24px 80px rgb(0 0 0 / 0.5),
+    0 0 40px hsl(var(--accent-h) 52% 56% / 0.08);
+  overflow: hidden;
+}
+.ask-top { display: flex; gap: 12px; align-items: center; padding: 14px 16px; border-bottom: 1px solid var(--hairline); }
+.ask-top i {
+  color: var(--brass);
+  font-style: normal;
+  text-shadow: 0 0 9px hsl(var(--accent-h) 60% 60% / 0.5);
+}
+.ask-title { font-family: var(--ff-serif); font-size: 17px; }
+.ask-close {
+  margin-left: auto;
+  background: none;
+  border: 1px solid var(--hairline);
+  border-radius: 4px;
+  color: var(--muted);
+  font-size: 13px;
+  padding: 5px 9px;
+  cursor: pointer;
+}
+.ask-close:hover { color: var(--brass); border-color: var(--brass-line); }
+.ask-messages { flex: 1; overflow-y: auto; padding: 8px 16px; min-height: 130px; }
+.ask-msg { margin: 10px 0; font-size: 14.5px; line-height: 1.65; max-width: 92%; }
+.ask-msg.user {
+  margin-left: auto;
+  padding: 8px 12px;
+  background: var(--brass-dim);
+  border-radius: 6px 6px 2px 6px;
+  color: var(--ink);
+  width: fit-content;
+}
+.ask-msg.model, .ask-msg.note { color: var(--muted); }
+.ask-msg.model a, .ask-msg.note a { color: var(--ink); border-bottom: 1px solid var(--brass-line); }
+.ask-msg.model a:hover, .ask-msg.note a:hover { color: var(--brass); }
+.ask-msg .li { display: block; padding-left: 4px; }
+.ask-think {
+  color: var(--brass);
+  display: inline-block;
+  animation: ask-breathe 1.4s ease-in-out infinite;
+}
+@keyframes ask-breathe {
+  0%, 100% { opacity: 0.35; }
+  50% { opacity: 1; }
+}
+.ask-starters { display: flex; flex-wrap: wrap; gap: 8px; padding: 4px 16px 12px; }
+.ask-starters button {
+  background: none;
+  border: 1px solid var(--hairline);
+  border-radius: 999px;
+  color: var(--muted);
+  font-family: var(--ff-mono);
+  font-size: 11.5px;
+  padding: 6px 12px;
+  cursor: pointer;
+}
+.ask-starters button:hover { color: var(--brass); border-color: var(--brass-line); }
+.ask-form { display: flex; gap: 10px; padding: 12px 16px; border-top: 1px solid var(--hairline); }
+.ask-form input {
+  flex: 1;
+  background: none;
+  border: 0;
+  outline: none;
+  color: var(--ink);
+  font-family: var(--ff-sans);
+  font-size: 16px; /* 16px so iOS does not zoom on focus */
+}
+.ask-form input::placeholder { color: var(--faint); }
+.ask-send {
+  background: none;
+  border: 1px solid var(--brass-line);
+  border-radius: 4px;
+  color: var(--brass);
+  font-size: 15px;
+  padding: 5px 13px;
+  cursor: pointer;
+}
+.ask-send:hover:not(:disabled) { background: var(--brass-dim); }
+.ask-send:disabled, .ask-form input:disabled { opacity: 0.5; }
+.ask-foot { padding: 8px 16px 10px; font-family: var(--ff-mono); font-size: 10.5px; color: var(--faint); border-top: 1px solid var(--hairline); }
+.ask-foot a { color: var(--muted); }
+.ask-foot a:hover { color: var(--brass); }
+
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: 34px;
+  transform: translateX(-50%) translateY(8px);
+  z-index: 80;
+  background: var(--panel);
+  border: 1px solid var(--brass-line);
+  color: var(--ink);
+  font-family: var(--ff-mono);
+  font-size: 12.5px;
+  padding: 9px 16px;
+  border-radius: 4px;
+  opacity: 0;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  pointer-events: none;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+.confetti { position: fixed; inset: 0; z-index: 70; pointer-events: none; }
+
+/* Print: force the day palette regardless of theme, drop chrome. */
+@media print {
+  :root,
+  :root[data-theme='dark'],
+  :root[data-theme='light'] {
+    --brass-s: 60%;
+    --brass-l: 28%;
+    --bg: #fff;
+    --bg-deep: #fff;
+    --panel: #fff;
+    --hairline: #d8d8d8;
+    --ink: #111;
+    --muted: #333;
+    --faint: #666;
+    color-scheme: light;
+  }
+  body { background: #fff; font-size: 13px; }
+  .no-print, .grain, .margin-sky, .decl { display: none !important; }
+  .sec-rule { background: none; height: auto; }
+}
+
+@page { margin: 14mm; }

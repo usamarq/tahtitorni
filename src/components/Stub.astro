@@ -1,0 +1,19 @@
+---
+interface Props {
+  label: string;
+  note: string;
+}
+const { label, note } = Astro.props;
+---
+
+<div class="wrap stub">
+  <p class="sec-label">{label}</p>
+  <hr class="sec-rule" />
+  <p class="note"><i>✦</i> {note}</p>
+</div>
+
+<style>
+  .stub { padding: 80px 28px 60px; }
+  .note { color: var(--muted); font-size: 15px; margin-top: 24px; }
+  .note i { color: var(--brass); font-style: normal; margin-right: 8px; }
+</style>

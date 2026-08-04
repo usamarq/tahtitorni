@@ -1,0 +1,207 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHeader from '../components/PageHeader.astro';
+---
+
+<Base
+  title="Playground · Usama Raheel"
+  description="Toys, not work: an optimizer race, a digit sketchpad running a small network in your browser, a perfect-circle score, and a flow field."
+  image="/og-playground.png"
+  imageAlt="Playground: four live canvas toys, from an optimizer race to a flow field"
+>
+  <PageHeader
+    sky
+    label="Playground"
+    count="toys, not work"
+    title="Small experiments, <em>running live</em>"
+    lede="Four canvases to poke at. Everything runs in your browser: no servers, no frameworks, just TypeScript and canvas. Each widget loads lazily as you scroll to it."
+  />
+
+  <div class="wrap widgets">
+    <section class="widget" id="optimizer-race" data-widget="optimizer">
+      <p class="sec-label">01 · Optimizer race</p>
+      <hr class="sec-rule" />
+      <p class="desc">
+        The Himmelblau function has four minima, marked in brass. Click anywhere on the
+        surface to drop three optimizers at that point: plain SGD, SGD with momentum, and
+        Adam. Same start, different temperaments.
+      </p>
+      <div class="panel">
+        <canvas class="race" aria-label="Loss surface. Click to start an optimizer race; glowing trails show each optimizer's path toward a minimum."></canvas>
+        <div class="bar">
+          <span class="legend"></span>
+          <span class="grow"></span>
+          <button class="btn ghost small" data-action="random" type="button">Random start</button>
+          <button class="btn ghost small" data-action="clear" type="button">Clear</button>
+        </div>
+        <p class="status" aria-live="polite">click the surface to drop three optimizers</p>
+      </div>
+    </section>
+
+    <section class="widget" id="digit-sketchpad" data-widget="digits">
+      <p class="sec-label">02 · Digit sketchpad</p>
+      <hr class="sec-rule" />
+      <p class="desc">
+        Draw a digit and a small network reads it: a 784-64-10 MLP trained on MNIST to
+        97.45% test accuracy, quantized to int8, 68 KB of weights, inference in pure
+        TypeScript. Nothing leaves your browser.
+      </p>
+      <div class="panel">
+        <div class="pad-grid">
+          <div class="pad-side">
+            <canvas class="pad" aria-label="Sketchpad. Draw a digit from 0 to 9 with your pointer or finger."></canvas>
+            <div class="pad-bar">
+              <button class="btn ghost small" data-action="clear" type="button">Clear</button>
+            </div>
+          </div>
+          <div class="read">
+            <p class="guess" aria-hidden="true">·</p>
+            <div class="bars" aria-hidden="true"></div>
+            <p class="status pad-status" aria-live="polite">loading model…</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="widget" id="perfect-circle" data-widget="circle">
+      <p class="sec-label">03 · Perfect circle</p>
+      <hr class="sec-rule" />
+      <p class="desc">
+        Astronomers drew their charts freehand for centuries. Your turn: draw a circle in
+        one stroke and a least-squares fit will tell you, to a decimal, how round it was.
+      </p>
+      <div class="panel">
+        <canvas class="circle" aria-label="Circle sketchpad. Draw a circle in one stroke with your pointer or finger; you get a roundness score out of one hundred."></canvas>
+        <div class="bar">
+          <span class="best mono-note"></span>
+          <span class="grow"></span>
+          <button class="btn ghost small" data-action="clear" type="button">Clear</button>
+        </div>
+        <p class="status" aria-live="polite">draw a circle · one stroke, all the way around</p>
+      </div>
+    </section>
+
+    <section class="widget" id="flow-field" data-widget="flow">
+      <p class="sec-label">04 · Flow field</p>
+      <hr class="sec-rule" />
+      <p class="desc">
+        A thousand particles trace a hidden Perlin noise field that never repeats. Move
+        your cursor to stir it; click to scatter a ring of them.
+      </p>
+      <div class="panel">
+        <canvas class="flow" aria-label="Generative flow field. Particles drift along a slowly evolving noise field, leaving glowing trails."></canvas>
+      </div>
+    </section>
+  </div>
+</Base>
+
+<style>
+  section.widget { padding: 56px 0 4px; }
+  .desc { color: var(--muted); font-size: 15px; max-width: 60ch; margin: 14px 0 18px; }
+
+  .panel {
+    border: 1px solid var(--hairline);
+    border-radius: 4px;
+    background: var(--bg-deep);
+    overflow: hidden;
+  }
+  .panel canvas { display: block; width: 100%; touch-action: none; cursor: crosshair; }
+  canvas.race { height: 420px; }
+  canvas.flow { height: 380px; }
+  canvas.circle { height: 380px; }
+  .mono-note { font-family: var(--ff-mono); font-size: 11.5px; color: var(--brass); }
+
+  .bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    padding: 10px 12px;
+    border-top: 1px solid var(--hairline);
+  }
+  .grow { flex: 1; }
+  .btn.small { padding: 7px 13px; font-size: 11px; letter-spacing: 0.14em; }
+  .status {
+    font-family: var(--ff-mono);
+    font-size: 12px;
+    color: var(--faint);
+    padding: 0 12px 12px;
+    margin-top: 8px;
+  }
+  .legend :global(.swatch) { font-family: var(--ff-mono); font-size: 11.5px; color: var(--muted); margin-right: 14px; white-space: nowrap; }
+  .legend :global(.swatch i) { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 6px; vertical-align: -1px; }
+
+  .pad-grid { display: grid; grid-template-columns: auto 1fr; gap: 28px; padding: 22px; }
+  .pad { border: 1px dashed var(--hairline); border-radius: 4px; cursor: crosshair; touch-action: none; }
+  .pad-bar { padding-top: 12px; }
+  .read { display: flex; flex-direction: column; gap: 16px; min-width: 0; justify-content: center; }
+  .guess {
+    font-family: var(--ff-serif);
+    font-size: 88px;
+    line-height: 1;
+    color: var(--brass);
+    text-shadow: 0 0 26px hsl(var(--accent-h) 60% 60% / 0.35);
+  }
+  .bars { display: flex; gap: 8px; align-items: stretch; height: 100px; max-width: 430px; }
+  .bars :global(.col) { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px; }
+  .bars :global(.track) { width: 100%; flex: 1; display: flex; align-items: flex-end; background: var(--panel); border-radius: 2px; overflow: hidden; }
+  .bars :global(.fill) { width: 100%; height: 2%; background: var(--faint); transition: height 0.15s ease; }
+  .bars :global(.fill.top) { background: var(--brass); box-shadow: 0 0 12px hsl(var(--accent-h) 60% 60% / 0.5); }
+  .bars :global(.col span) { font-family: var(--ff-mono); font-size: 11px; color: var(--faint); }
+  .pad-status { padding: 0; margin: 0; }
+
+  @media (max-width: 760px) {
+    section.widget { padding: 44px 0 4px; }
+    .pad-grid { grid-template-columns: 1fr; gap: 20px; padding: 16px; }
+    .guess { font-size: 64px; }
+    canvas.race { height: 340px; }
+    canvas.flow { height: 300px; }
+    canvas.circle { height: 320px; }
+  }
+
+  /* wide desktops: the plates stretch, then pair up side by side */
+  @media (min-width: 1440px) {
+    .wrap.widgets { max-width: 1300px; }
+  }
+  @media (min-width: 1500px) {
+    .wrap.widgets {
+      max-width: 1440px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      /* equal rows so all four plates come out the same size */
+      grid-auto-rows: 1fr;
+      column-gap: 48px;
+    }
+    section.widget { padding-top: 48px; display: flex; flex-direction: column; }
+    /* descriptions reserve three lines so every panel starts level */
+    .desc { min-height: 78px; min-height: 3lh; }
+    /* panels absorb the leftover height; the canvas is the part that grows */
+    .panel { flex: 1; display: flex; flex-direction: column; }
+    .panel > canvas { flex: 1; height: auto; min-height: 300px; }
+    .pad-grid { flex: 1; align-content: center; }
+  }
+  @media (min-width: 1600px) {
+    .desc { font-size: 16px; }
+  }
+</style>
+
+<script>
+  const map: Record<string, () => Promise<{ default: (el: HTMLElement) => void }>> = {
+    optimizer: () => import('../scripts/optimizer-race'),
+    digits: () => import('../scripts/digit-sketchpad'),
+    circle: () => import('../scripts/circle-game'),
+    flow: () => import('../scripts/flow-field'),
+  };
+  const io = new IntersectionObserver(
+    (ents) => {
+      for (const en of ents) {
+        if (!en.isIntersecting) continue;
+        const el = en.target as HTMLElement;
+        io.unobserve(el);
+        map[el.dataset.widget!]?.().then((m) => m.default(el));
+      }
+    },
+    { rootMargin: '250px' }
+  );
+  document.querySelectorAll<HTMLElement>('[data-widget]').forEach((el) => io.observe(el));
+</script>

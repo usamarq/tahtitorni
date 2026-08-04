@@ -1,0 +1,317 @@
+---
+import Base from '../layouts/Base.astro';
+---
+
+<Base title="404 · Usama Raheel" description="This page is not on any chart.">
+  <Fragment slot="head">
+    <meta name="robots" content="noindex" />
+  </Fragment>
+
+  <div class="wrap lost">
+    <p class="code">404</p>
+    <h1>Lost among the <em>stars</em></h1>
+    <p class="note">This page is not on any chart. While you are here, make one: light all seven stars.</p>
+
+    <div class="game">
+      <canvas
+        id="chart"
+        tabindex="0"
+        aria-label="Star-charting game. Move the lens with your pointer or arrow keys; touch each of the seven bright stars to light it."
+      ></canvas>
+      <p class="status">
+        <span id="status" aria-live="polite">0 of 7 stars lit</span>
+        <span class="hint">pointer or arrow keys</span>
+      </p>
+    </div>
+
+    <div class="actions">
+    <a class="btn" href="/" id="home-btn">Back to base</a>
+    <a class="btn ghost" href="/playground" id="playground-btn" hidden>Chart more skies ✦</a>
+  </div>
+  </div>
+</Base>
+
+<style>
+  .lost { padding: 70px 28px 40px; text-align: center; }
+  .code { font-family: var(--ff-mono); font-size: 13px; color: var(--brass); letter-spacing: 0.3em; }
+  h1 { font-family: var(--ff-serif); font-size: clamp(38px, 6vw, 60px); font-weight: 500; margin: 14px 0 12px; }
+  .note { color: var(--muted); max-width: 52ch; margin: 0 auto; }
+
+  .game { width: 100%; max-width: 640px; margin: 36px auto 28px; }
+  canvas {
+    display: block;
+    width: 100%;
+    height: 320px;
+    border: 1px solid var(--hairline);
+    border-radius: 4px;
+    background: var(--bg-deep);
+    touch-action: none;
+    cursor: crosshair;
+  }
+  .status {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    margin-top: 10px;
+    font-family: var(--ff-mono);
+    font-size: 12px;
+    color: var(--faint);
+    font-variant-numeric: tabular-nums;
+  }
+  .btn.lit { border-color: var(--brass); background: var(--brass-dim); }
+  .actions { display: flex; justify-content: center; gap: 14px; flex-wrap: wrap; }
+
+  @media (max-width: 760px) {
+    .lost { padding-top: 46px; }
+    canvas { height: 280px; }
+    .status .hint { display: none; }
+  }
+</style>
+
+<script>
+  const canvas = document.getElementById('chart') as HTMLCanvasElement | null;
+  const statusEl = document.getElementById('status');
+  const homeBtn = document.getElementById('home-btn');
+  const playgroundBtn = document.getElementById('playground-btn');
+  if (canvas && statusEl) {
+    const ctx = canvas.getContext('2d')!;
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const TARGETS = 7;
+    let W = 0;
+    let H = 0;
+
+    // palette from tokens, same trick as the home sky
+    let starRGB = '210, 222, 244';
+    let brassHSL = '42 52% 56%';
+    let faintColor = 'rgba(95, 104, 128, 0.9)';
+    function readPalette() {
+      const cs = getComputedStyle(document.documentElement);
+      starRGB = cs.getPropertyValue('--sky-star').trim() || starRGB;
+      const h = cs.getPropertyValue('--accent-h').trim() || '42';
+      const s = cs.getPropertyValue('--brass-s').trim() || '52%';
+      const l = cs.getPropertyValue('--brass-l').trim() || '56%';
+      brassHSL = `${h} ${s} ${l}`;
+      const faint = cs.getPropertyValue('--faint').trim();
+      if (faint) faintColor = faint;
+    }
+    const brass = (a: number) => `hsl(${brassHSL} / ${a})`;
+
+    type Target = { x: number; y: number; lit: boolean; order: number };
+    type Dust = { x: number; y: number; r: number; base: number; amp: number; phase: number; speed: number };
+    let targets: Target[] = [];
+    let dust: Dust[] = [];
+    const lens = { x: 0, y: 0, tx: 0, ty: 0, r: 30 };
+    let litCount = 0;
+    let done = false;
+
+    function resize() {
+      W = canvas.clientWidth;
+      H = canvas.clientHeight;
+      canvas.width = W * dpr;
+      canvas.height = H * dpr;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+
+    function seed() {
+      targets = [];
+      let guard = 0;
+      while (targets.length < TARGETS && guard++ < 500) {
+        const x = 34 + Math.random() * (W - 68);
+        const y = 34 + Math.random() * (H - 68);
+        if (targets.every((t) => Math.hypot(t.x - x, t.y - y) > 64)) {
+          targets.push({ x, y, lit: false, order: -1 });
+        }
+      }
+      dust = [];
+      for (let i = 0; i < 46; i++) {
+        dust.push({
+          x: Math.random() * W,
+          y: Math.random() * H,
+          r: Math.random() < 0.1 ? 1.4 : 0.8,
+          base: 0.18 + Math.random() * 0.35,
+          amp: 0.1 + Math.random() * 0.2,
+          phase: Math.random() * Math.PI * 2,
+          speed: 0.0006 + Math.random() * 0.001,
+        });
+      }
+      lens.x = lens.tx = W / 2;
+      lens.y = lens.ty = H / 2;
+      litCount = 0;
+      done = false;
+      setStatus();
+      homeBtn?.classList.remove('lit');
+      if (playgroundBtn) playgroundBtn.hidden = true;
+    }
+
+    function setStatus() {
+      statusEl.textContent = done
+        ? 'Chart complete. You were never lost.'
+        : `${litCount} of ${TARGETS} stars lit`;
+    }
+
+    function step() {
+      if (reduced) {
+        lens.x = lens.tx;
+        lens.y = lens.ty;
+      } else {
+        lens.x += (lens.tx - lens.x) * 0.16;
+        lens.y += (lens.ty - lens.y) * 0.16;
+      }
+      for (const t of targets) {
+        if (!t.lit && Math.hypot(t.x - lens.x, t.y - lens.y) < lens.r + 5) {
+          t.lit = true;
+          t.order = litCount++;
+          if (litCount === TARGETS) {
+            done = true;
+            homeBtn?.classList.add('lit');
+            /* a finished chart earns the way to the rest of the toys */
+            if (playgroundBtn) playgroundBtn.hidden = false;
+          }
+          setStatus();
+        }
+      }
+    }
+
+    function draw(tms: number) {
+      ctx.clearRect(0, 0, W, H);
+
+      for (const d of dust) {
+        const a = reduced ? d.base : Math.max(0.06, d.base + Math.sin(tms * d.speed + d.phase) * d.amp);
+        ctx.fillStyle = `rgba(${starRGB}, ${a})`;
+        ctx.beginPath();
+        ctx.arc(d.x, d.y, d.r, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      const lit = targets.filter((t) => t.lit).sort((a, b) => a.order - b.order);
+      if (lit.length > 1) {
+        // wide low-alpha pass under a thin bright one: a soft glow
+        ctx.strokeStyle = brass(0.13);
+        ctx.lineWidth = 4.5;
+        ctx.beginPath();
+        ctx.moveTo(lit[0].x, lit[0].y);
+        for (let i = 1; i < lit.length; i++) ctx.lineTo(lit[i].x, lit[i].y);
+        ctx.stroke();
+        ctx.strokeStyle = brass(0.55);
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(lit[0].x, lit[0].y);
+        for (let i = 1; i < lit.length; i++) ctx.lineTo(lit[i].x, lit[i].y);
+        ctx.stroke();
+      }
+
+      for (const t of targets) {
+        if (t.lit) {
+          ctx.fillStyle = brass(0.16);
+          ctx.beginPath();
+          ctx.arc(t.x, t.y, 9, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.fillStyle = brass(0.95);
+          ctx.beginPath();
+          ctx.arc(t.x, t.y, 3, 0, Math.PI * 2);
+          ctx.fill();
+        } else {
+          ctx.strokeStyle = `rgba(${starRGB}, 0.28)`;
+          ctx.lineWidth = 0.8;
+          ctx.beginPath();
+          ctx.arc(t.x, t.y, 6.5, 0, Math.PI * 2);
+          ctx.stroke();
+          ctx.fillStyle = `rgba(${starRGB}, 0.92)`;
+          ctx.beginPath();
+          ctx.arc(t.x, t.y, 2.3, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
+
+      if (done && lit.length) {
+        const last = lit[lit.length - 1];
+        ctx.fillStyle = faintColor;
+        ctx.font = '11px Consolas, monospace';
+        const label = 'the lost page';
+        const w = ctx.measureText(label).width;
+        ctx.fillText(label, Math.min(last.x + 12, W - w - 8), Math.max(14, last.y - 10));
+      }
+
+      // the lens, with a soft outer glow
+      ctx.strokeStyle = brass(0.14);
+      ctx.lineWidth = 5.5;
+      ctx.beginPath();
+      ctx.arc(lens.x, lens.y, lens.r, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.strokeStyle = brass(0.85);
+      ctx.lineWidth = 1.1;
+      ctx.beginPath();
+      ctx.arc(lens.x, lens.y, lens.r, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.strokeStyle = brass(0.35);
+      ctx.beginPath();
+      ctx.arc(lens.x, lens.y, lens.r - 6, 0, Math.PI * 2);
+      ctx.stroke();
+      for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) {
+        ctx.strokeStyle = brass(0.85);
+        ctx.beginPath();
+        ctx.moveTo(lens.x + dx * (lens.r - 3), lens.y + dy * (lens.r - 3));
+        ctx.lineTo(lens.x + dx * (lens.r + 4), lens.y + dy * (lens.r + 4));
+        ctx.stroke();
+      }
+    }
+
+    function frame(tms: number) {
+      step();
+      draw(tms);
+      if (!reduced) requestAnimationFrame(frame);
+    }
+    function redraw() {
+      if (reduced) {
+        step();
+        draw(0);
+      }
+    }
+
+    canvas.addEventListener('pointermove', (e) => {
+      const r = canvas.getBoundingClientRect();
+      lens.tx = e.clientX - r.left;
+      lens.ty = e.clientY - r.top;
+      redraw();
+    });
+    canvas.addEventListener('pointerdown', (e) => {
+      const r = canvas.getBoundingClientRect();
+      lens.tx = e.clientX - r.left;
+      lens.ty = e.clientY - r.top;
+      canvas.focus();
+      redraw();
+    });
+    canvas.addEventListener('keydown', (e) => {
+      const stepPx = 16;
+      let used = true;
+      if (e.key === 'ArrowLeft' || e.key === 'a') lens.tx -= stepPx;
+      else if (e.key === 'ArrowRight' || e.key === 'd') lens.tx += stepPx;
+      else if (e.key === 'ArrowUp' || e.key === 'w') lens.ty -= stepPx;
+      else if (e.key === 'ArrowDown' || e.key === 's') lens.ty += stepPx;
+      else used = false;
+      if (used) {
+        e.preventDefault();
+        lens.tx = Math.max(0, Math.min(W, lens.tx));
+        lens.ty = Math.max(0, Math.min(H, lens.ty));
+        redraw();
+      }
+    });
+
+    window.addEventListener('resize', () => {
+      resize();
+      seed();
+      if (reduced) draw(0);
+    });
+    window.addEventListener('themechange', () => {
+      readPalette();
+      if (reduced) draw(0);
+    });
+
+    readPalette();
+    resize();
+    seed();
+    if (reduced) draw(0);
+    else requestAnimationFrame(frame);
+  }
+</script>

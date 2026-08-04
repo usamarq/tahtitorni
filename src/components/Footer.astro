@@ -1,0 +1,85 @@
+---
+import Sky from './Sky.astro';
+import { site, socials } from '../data/site';
+const year = new Date().getFullYear();
+---
+
+<div class="horizon" aria-hidden="true">
+  <Sky density={12} interactive={false} fade="top" />
+</div>
+<footer>
+  <div class="wrap foot">
+    <div class="foot-links">
+      {socials.map((s) =>
+        s.href ? (
+          <a href={s.href} rel="me noopener" target={s.href.startsWith('mailto:') ? undefined : '_blank'}>
+            {s.label}
+          </a>
+        ) : (
+          <span class="pending" title="Handle pending">{s.label}</span>
+        )
+      )}
+    </div>
+    <label class="knob">brass
+      <input type="range" min="0" max="360" value="42" aria-label="Shift the site accent color" />
+    </label>
+    <span class="copy">© {year} {site.name} · {site.location} · {site.latitude}</span>
+  </div>
+</footer>
+
+<style>
+  .horizon { position: relative; overflow: hidden; height: 130px; margin-top: 60px; }
+  footer { border-top: 1px solid var(--hairline); padding: 28px 0 46px; }
+  .foot { display: flex; justify-content: space-between; align-items: center; gap: 20px; flex-wrap: wrap; }
+  .foot-links { display: flex; gap: 26px; flex-wrap: wrap; font-size: 12.5px; letter-spacing: 0.16em; text-transform: uppercase; }
+  .foot-links a { color: var(--muted); }
+  .foot-links a:hover { color: var(--brass); }
+  .pending { color: var(--faint); cursor: help; border-bottom: 1px dashed var(--hairline); }
+  .copy { font-family: var(--ff-mono); font-size: 12px; color: var(--faint); }
+  .knob { display: flex; align-items: center; gap: 10px; font-family: var(--ff-mono); font-size: 11px; color: var(--faint); }
+  .knob input {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 110px;
+    height: 3px;
+    border-radius: 2px;
+    background: linear-gradient(to right, hsl(0 45% 55%), hsl(60 45% 55%), hsl(150 45% 55%), hsl(220 45% 55%), hsl(300 45% 55%), hsl(360 45% 55%));
+    cursor: pointer;
+  }
+  .knob input::-webkit-slider-thumb {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 13px;
+    height: 13px;
+    border-radius: 50%;
+    background: var(--brass);
+    border: 2px solid var(--bg);
+  }
+  .knob input::-moz-range-thumb {
+    width: 13px;
+    height: 13px;
+    border-radius: 50%;
+    background: var(--brass);
+    border: 2px solid var(--bg);
+  }
+  @media (max-width: 760px) {
+    .foot { flex-direction: column; align-items: flex-start; }
+  }
+
+  @media print {
+    footer, .horizon { display: none; }
+  }
+</style>
+
+<script>
+  const knob = document.querySelector<HTMLInputElement>('.knob input');
+  if (knob) {
+    const stored = localStorage.getItem('accent-h');
+    if (stored) knob.value = stored;
+    knob.addEventListener('input', () => {
+      document.documentElement.style.setProperty('--accent-h', knob.value);
+      try { localStorage.setItem('accent-h', knob.value); } catch {}
+      window.dispatchEvent(new CustomEvent('themechange'));
+    });
+  }
+</script>

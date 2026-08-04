@@ -1,0 +1,102 @@
+---
+import { getCollection } from 'astro:content';
+import SpeedInsights from '@vercel/speed-insights/astro';
+import newsreaderUrl from '@fontsource-variable/newsreader/files/newsreader-latin-wght-normal.woff2?url';
+import plexUrl from '@fontsource-variable/ibm-plex-sans/files/ibm-plex-sans-latin-wght-normal.woff2?url';
+import '@fontsource-variable/newsreader';
+import '@fontsource-variable/newsreader/wght-italic.css';
+import '@fontsource-variable/ibm-plex-sans';
+import '@fontsource-variable/jetbrains-mono';
+import '../styles/global.css';
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+import Sky from '../components/Sky.astro';
+import { site } from '../data/site';
+
+/* the ⌘K palette lists every work entry */
+const KICKERS: Record<string, string> = {
+  'rag-llm': 'rag / llm',
+  research: 'research',
+  coursework: 'coursework',
+  systems: 'systems',
+  bsc: 'bsc era',
+};
+const paletteWork = (await getCollection('work'))
+  .sort((a, b) => a.data.order - b.data.order)
+  .map((e) => ({ t: e.data.title, href: `/work/${e.id}/`, k: KICKERS[e.data.group] ?? 'work' }));
+
+interface Props {
+  title?: string;
+  description?: string;
+  image?: string;
+  imageAlt?: string;
+}
+
+const {
+  title = `${site.name} · ${site.title}`,
+  description = site.description,
+  image = '/og.png',
+  imageAlt = `${site.name} · ${site.title}`,
+} = Astro.props;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const ogImage = new URL(image, Astro.site);
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="preload" as="font" type="font/woff2" href={newsreaderUrl} crossorigin />
+    <link rel="preload" as="font" type="font/woff2" href={plexUrl} crossorigin />
+    <link rel="canonical" href={canonical} />
+    <meta property="og:site_name" content={site.name} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={imageAlt} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content={ogImage} />
+    <meta name="generator" content={Astro.generator} />
+    <slot name="head" />
+    <script is:inline>
+      // runs before first paint: honor a stored theme override
+      (function () {
+        try {
+          var t = localStorage.getItem('theme');
+          if (t === 'light' || t === 'dark') document.documentElement.dataset.theme = t;
+          var h = localStorage.getItem('accent-h');
+          if (h) document.documentElement.style.setProperty('--accent-h', h);
+        } catch (e) {}
+      })();
+    </script>
+  </head>
+  <body>
+    <div class="margin-sky" aria-hidden="true">
+      <Sky density={34} interactive={false} fade="none" />
+    </div>
+    <Nav />
+    <main>
+      <slot />
+    </main>
+    <Footer />
+    <div class="grain" aria-hidden="true"></div>
+    <script type="application/json" is:inline id="palette-data" set:html={JSON.stringify({ work: paletteWork })} />
+    <script>
+      import '../scripts/delights';
+    </script>
+    {import.meta.env.PROD && process.env.VERCEL && (
+      <Fragment>
+        <script defer is:inline src="/_vercel/insights/script.js" />
+        <SpeedInsights />
+      </Fragment>
+    )}
+  </body>
+</html>

@@ -1,0 +1,19 @@
+# The tiny relay between the site's Ask panel and the Gemini API.
+# Deploy: npx wrangler deploy --config worker/wrangler.toml
+# Secret: npx wrangler secret put GEMINI_API_KEY --config worker/wrangler.toml
+name = "tahtitorni-ask"
+main = "src/index.js"
+compatibility_date = "2026-08-01"
+
+# Fallback chain, best model first: rolling aliases so retired names can't
+# break the assistant; free-tier daily quotas are per model, so when one
+# runs dry the worker steps down to the next.
+[vars]
+MODELS = "gemini-flash-latest,gemini-flash-lite-latest"
+
+# Per-IP rate limit: 8 requests per minute
+[[unsafe.bindings]]
+name = "RATE_LIMITER"
+type = "ratelimit"
+namespace_id = "1001"
+simple = { limit = 8, period = 60 }

@@ -1,0 +1,375 @@
+<title>Usama Raheel · C1 Quiet Lab</title>
+<style>
+  :root {
+    --accent-h: 38;
+    --accent: hsl(var(--accent-h) 68% 59%);
+    --accent-dim: hsl(var(--accent-h) 68% 59% / 0.14);
+    --accent-line: hsl(var(--accent-h) 68% 59% / 0.35);
+    --bg: #14161a;
+    --bg-raised: #191c21;
+    --border: #262a31;
+    --hairline: #1e2228;
+    --ink: #e6e3dd;
+    --muted: #a09b90;
+    --faint: #6e6a62;
+    --mono: "Cascadia Code", "Cascadia Mono", Consolas, "JetBrains Mono", monospace;
+    --sans: "Segoe UI", system-ui, -apple-system, sans-serif;
+    color-scheme: dark;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { background: var(--bg); }
+  body {
+    background:
+      radial-gradient(circle at 1px 1px, #1d2127 1px, transparent 1.5px) 0 0 / 26px 26px,
+      var(--bg);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 16px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: var(--ink); text-decoration: none; }
+  a:hover { color: var(--accent); }
+  a:focus-visible, button:focus-visible, input:focus-visible {
+    outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 2px;
+  }
+  .wrap { max-width: 1060px; margin: 0 auto; padding: 0 28px; }
+
+  /* ---------- nav ---------- */
+  nav {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 26px 0; font-family: var(--mono); font-size: 13.5px;
+  }
+  .brand { letter-spacing: 0.04em; color: var(--ink); }
+  .brand b { color: var(--accent); font-weight: 600; }
+  .nav-links { display: flex; gap: 28px; align-items: center; }
+  .nav-links a { color: var(--muted); }
+  .nav-links a:hover { color: var(--accent); }
+  .kbd {
+    border: 1px solid var(--border); border-radius: 4px; padding: 2px 7px;
+    color: var(--faint); font-size: 12px; background: var(--bg-raised);
+  }
+
+  /* ---------- hero ---------- */
+  header { position: relative; overflow: hidden; }
+  #field {
+    position: absolute; inset: 0; z-index: 0; opacity: 0.85;
+    -webkit-mask-image: linear-gradient(to bottom, black 55%, transparent 98%);
+    mask-image: linear-gradient(to bottom, black 55%, transparent 98%);
+  }
+  .hero { position: relative; z-index: 1; padding: 96px 0 84px; }
+  .kicker {
+    font-family: var(--mono); font-size: 13px; letter-spacing: 0.14em;
+    text-transform: uppercase; color: var(--accent); margin-bottom: 22px;
+  }
+  h1 {
+    font-size: clamp(46px, 7.5vw, 76px); font-weight: 650; letter-spacing: -0.02em;
+    line-height: 1.04; text-wrap: balance; margin-bottom: 26px;
+  }
+  .lede { max-width: 62ch; color: var(--muted); font-size: 18px; }
+  .lede strong { color: var(--ink); font-weight: 600; }
+  .chips { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 34px; }
+  .chip {
+    font-family: var(--mono); font-size: 12.5px; padding: 7px 12px;
+    border: 1px solid var(--border); border-radius: 4px; background: var(--bg-raised);
+    color: var(--muted); font-variant-numeric: tabular-nums;
+  }
+  .chip b { color: var(--accent); font-weight: 600; }
+  .ctas { display: flex; gap: 14px; margin-top: 38px; flex-wrap: wrap; }
+  .btn {
+    font-family: var(--mono); font-size: 14px; padding: 11px 20px; border-radius: 4px;
+    border: 1px solid var(--accent-line); color: var(--accent); background: var(--accent-dim);
+    transition: background 0.15s ease;
+  }
+  .btn:hover { background: hsl(var(--accent-h) 68% 59% / 0.22); color: var(--accent); }
+  .btn.ghost { border-color: var(--border); color: var(--muted); background: transparent; }
+  .btn.ghost:hover { color: var(--ink); border-color: var(--faint); }
+
+  /* ---------- sections ---------- */
+  section { padding: 72px 0 8px; }
+  .sec-label {
+    font-family: var(--mono); font-size: 13px; color: var(--faint);
+    letter-spacing: 0.06em; border-top: 1px solid var(--hairline);
+    padding-top: 18px; margin-bottom: 34px;
+  }
+  .sec-label b { color: var(--accent); font-weight: 400; }
+
+  /* work cards */
+  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 18px; }
+  .card {
+    border: 1px solid var(--border); border-radius: 6px; background: var(--bg-raised);
+    padding: 24px 24px 20px; display: flex; flex-direction: column; gap: 12px;
+    transition: border-color 0.15s ease, transform 0.15s ease;
+  }
+  .card:hover { border-color: var(--accent-line); transform: translateY(-2px); }
+  .card h3 { font-size: 18px; font-weight: 600; letter-spacing: -0.01em; text-wrap: balance; }
+  .card .meta { font-family: var(--mono); font-size: 12px; color: var(--faint); }
+  .card p { color: var(--muted); font-size: 14.5px; flex: 1; }
+  .card .metrics {
+    font-family: var(--mono); font-size: 13px; color: var(--accent);
+    font-variant-numeric: tabular-nums; border-top: 1px solid var(--hairline); padding-top: 12px;
+  }
+  .card .links { display: flex; gap: 16px; font-family: var(--mono); font-size: 13px; }
+  .card .links a { color: var(--muted); border-bottom: 1px solid var(--border); }
+  .card .links a:hover { color: var(--accent); border-color: var(--accent-line); }
+
+  /* experience rows */
+  .rows { display: flex; flex-direction: column; }
+  .row {
+    display: grid; grid-template-columns: 150px 1fr auto; gap: 18px; align-items: baseline;
+    padding: 15px 4px; border-bottom: 1px solid var(--hairline);
+  }
+  .row:hover { background: hsl(var(--accent-h) 68% 59% / 0.04); }
+  .row .years { font-family: var(--mono); font-size: 13px; color: var(--faint); font-variant-numeric: tabular-nums; }
+  .row .role { font-weight: 600; font-size: 15.5px; }
+  .row .org { color: var(--muted); font-size: 14px; text-align: right; }
+
+  /* playground teaser */
+  .toys { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 18px; }
+  .toy {
+    border: 1px dashed var(--border); border-radius: 6px; padding: 22px;
+    transition: border-color 0.15s ease;
+  }
+  .toy:hover { border-color: var(--accent-line); }
+  .toy h4 { font-family: var(--mono); font-size: 14px; color: var(--accent); font-weight: 600; margin-bottom: 8px; }
+  .toy p { color: var(--muted); font-size: 14px; }
+  .toy .tag {
+    display: inline-block; margin-top: 14px; font-family: var(--mono); font-size: 11px;
+    color: var(--faint); letter-spacing: 0.08em; text-transform: uppercase;
+  }
+
+  /* ---------- footer ---------- */
+  footer { margin-top: 84px; border-top: 1px solid var(--hairline); padding: 26px 0 40px; }
+  .foot { display: flex; justify-content: space-between; align-items: center; gap: 20px; flex-wrap: wrap; }
+  .foot-links { display: flex; gap: 22px; font-family: var(--mono); font-size: 13px; }
+  .foot-links a { color: var(--muted); }
+  .copy { font-family: var(--mono); font-size: 12.5px; color: var(--faint); }
+  .knob { display: flex; align-items: center; gap: 10px; font-family: var(--mono); font-size: 11.5px; color: var(--faint); }
+  .knob input {
+    appearance: none; -webkit-appearance: none; width: 110px; height: 4px; border-radius: 2px;
+    background: linear-gradient(to right, hsl(0 60% 55%), hsl(60 60% 55%), hsl(150 60% 55%), hsl(220 60% 55%), hsl(300 60% 55%), hsl(360 60% 55%));
+    cursor: pointer;
+  }
+  .knob input::-webkit-slider-thumb {
+    appearance: none; -webkit-appearance: none; width: 14px; height: 14px; border-radius: 50%;
+    background: var(--accent); border: 2px solid var(--bg);
+  }
+  .variant-tag {
+    position: fixed; right: 14px; bottom: 14px; z-index: 5;
+    font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em;
+    color: var(--faint); background: var(--bg-raised); border: 1px solid var(--border);
+    padding: 5px 10px; border-radius: 4px;
+  }
+
+  @media (max-width: 760px) {
+    .hero { padding: 64px 0 60px; }
+    .row { grid-template-columns: 1fr; gap: 2px; padding: 14px 4px; }
+    .row .org { text-align: left; }
+    .nav-links { gap: 18px; }
+    .nav-links .hide-s { display: none; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; animation: none !important; }
+  }
+</style>
+
+<div class="wrap">
+  <nav>
+    <span class="brand">usama<b>.</b>raheel</span>
+    <span class="nav-links">
+      <a href="#work">work</a>
+      <a href="#cv">cv</a>
+      <a href="#playground">playground</a>
+      <a href="#" class="hide-s">about</a>
+      <span class="kbd">⌘K</span>
+    </span>
+  </nav>
+</div>
+
+<header>
+  <canvas id="field" aria-hidden="true"></canvas>
+  <div class="wrap hero">
+    <p class="kicker">// AI Research Engineer · Oulu, Finland</p>
+    <h1>Usama Raheel</h1>
+    <p class="lede">
+      I build and evaluate <strong>retrieval-augmented LLM systems</strong>: hybrid retrieval
+      pipelines, LLM-as-judge evaluation, and the engineering that takes them from prototype
+      to delivery. MSc in Computer Science and Engineering (AI) from the University of Oulu,
+      2026, with four years in industry before it.
+    </p>
+    <div class="chips">
+      <span class="chip"><b>82.7%</b> answer quality · thesis RAG</span>
+      <span class="chip"><b>MRR 0.96</b> · P@1 0.93 · deployed retrieval</span>
+      <span class="chip"><b>arXiv</b> co-author · cs.LG</span>
+    </div>
+    <div class="ctas">
+      <a class="btn" href="#work">view work</a>
+      <a class="btn ghost" href="#cv">read the cv</a>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+  <section id="work">
+    <p class="sec-label"><b>//</b> selected work <span style="float:right">03 of 16</span></p>
+    <div class="cards">
+      <article class="card">
+        <p class="meta">msc thesis · valamis group / university of oulu · 2025-2026</p>
+        <h3>Context-Aware Insight Generation via RAG</h3>
+        <p>A RAG assistant that turns corporate learning data into business insights.
+           Hybrid retrieval (column mapping, intent detection, dense search) with two
+           LLM judges validated against human ratings.</p>
+        <p class="metrics">82.7% answer quality · +13.6 pts · MRR 0.96 · P@1 0.93</p>
+        <div class="links"><a href="#">thesis, open access</a></div>
+      </article>
+      <article class="card">
+        <p class="meta">arXiv preprint · cs.LG · 2026</p>
+        <h3>Railway Delays and Finnish Weather</h3>
+        <p>First publicly available dataset linking Finnish railway operations with
+           synchronized weather, 2018-2024: about 38.5M observations across 5,915 km
+           of rail and 209 weather stations.</p>
+        <p class="metrics">38.5M observations · XGBoost baseline · 2.73 min MAE</p>
+        <div class="links"><a href="#">arXiv</a><a href="#">dataset</a></div>
+      </article>
+      <article class="card">
+        <p class="meta">university of oulu · 2025</p>
+        <h3>Recipe Retrieval at 500K Scale</h3>
+        <p>BM25, Sentence-BERT and hybrid retrieval with RAG over 500K+ recipes.
+           End-to-end pipeline: preprocessing, semantic indexing, structured filtering,
+           query expansion.</p>
+        <p class="metrics">NDCG@k 0.95 · MRR 1.0</p>
+        <div class="links"><a href="#">github</a></div>
+      </article>
+    </div>
+  </section>
+
+  <section id="cv">
+    <p class="sec-label"><b>//</b> experience</p>
+    <div class="rows">
+      <div class="row"><span class="years">2025 - 2026</span><span class="role">AI Research Engineer, Master's Thesis</span><span class="org">Valamis Group Oy</span></div>
+      <div class="row"><span class="years">2025</span><span class="role">AI Research Intern</span><span class="org">Centre for Wireless Communications, University of Oulu</span></div>
+      <div class="row"><span class="years">2023 - 2024</span><span class="role">Technical Project Manager</span><span class="org">ZeePalm</span></div>
+      <div class="row"><span class="years">2022</span><span class="role">Software Developer</span><span class="org">GrocerApp</span></div>
+      <div class="row"><span class="years">2021 - 2022</span><span class="role">Application Consultant</span><span class="org">Techlogix</span></div>
+      <div class="row"><span class="years">2020 - 2021</span><span class="role">Teaching Assistant</span><span class="org">FAST-NUCES</span></div>
+    </div>
+  </section>
+
+  <section id="playground">
+    <p class="sec-label"><b>//</b> playground <span style="float:right">toys, not work</span></p>
+    <div class="toys">
+      <div class="toy">
+        <h4>optimizer race</h4>
+        <p>Drop a marker on a loss surface and watch SGD, momentum and Adam find their way down.</p>
+        <span class="tag">in progress</span>
+      </div>
+      <div class="toy">
+        <h4>digit sketchpad</h4>
+        <p>Draw a digit; a small network guesses it, running entirely in your browser.</p>
+        <span class="tag">in progress</span>
+      </div>
+      <div class="toy">
+        <h4>flow field</h4>
+        <p>The particles behind this page. Poke them.</p>
+        <span class="tag">live above</span>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="foot">
+      <div class="foot-links">
+        <a href="#">email</a><a href="#">github</a><a href="#">linkedin</a><a href="#">thesis</a>
+      </div>
+      <label class="knob">accent
+        <input type="range" min="0" max="360" value="38" aria-label="Shift the site accent color">
+      </label>
+      <span class="copy">© 2026 Usama Raheel · Oulu, Finland</span>
+    </div>
+  </footer>
+</div>
+
+<span class="variant-tag">mockup c1 · quiet lab</span>
+
+<script>
+  // accent knob
+  document.querySelector('.knob input').addEventListener('input', function (e) {
+    document.documentElement.style.setProperty('--accent-h', e.target.value);
+  });
+
+  // flow field hero
+  (function () {
+    var canvas = document.getElementById('field');
+    var header = canvas.parentElement;
+    var ctx = canvas.getContext('2d');
+    var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var dpr = Math.min(window.devicePixelRatio || 1, 2);
+    var W, H, parts = [], mouse = { x: -9999, y: -9999 };
+    var running = true, visible = true;
+
+    function accent(alpha) {
+      var h = getComputedStyle(document.documentElement).getPropertyValue('--accent-h').trim() || 38;
+      return 'hsl(' + h + ' 68% 59% / ' + alpha + ')';
+    }
+    function resize() {
+      W = header.clientWidth; H = header.clientHeight;
+      canvas.width = W * dpr; canvas.height = H * dpr;
+      canvas.style.width = W + 'px'; canvas.style.height = H + 'px';
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.fillStyle = '#14161a'; ctx.fillRect(0, 0, W, H);
+    }
+    function seed() {
+      parts = [];
+      var n = Math.min(110, Math.floor(W / 12));
+      for (var i = 0; i < n; i++) {
+        parts.push({ x: Math.random() * W, y: Math.random() * H, vx: 0, vy: 0 });
+      }
+    }
+    function fieldAngle(x, y, t) {
+      return Math.sin(x * 0.0016 + t * 0.00022) * 2.2 + Math.cos(y * 0.0021 - t * 0.00017) * 2.2;
+    }
+    function step(t) {
+      if (!running || !visible) return;
+      ctx.fillStyle = 'rgba(20, 22, 26, 0.075)';
+      ctx.fillRect(0, 0, W, H);
+      for (var i = 0; i < parts.length; i++) {
+        var p = parts[i];
+        var a = fieldAngle(p.x, p.y, t);
+        p.vx += Math.cos(a) * 0.028; p.vy += Math.sin(a) * 0.028;
+        var dx = p.x - mouse.x, dy = p.y - mouse.y, d2 = dx * dx + dy * dy;
+        if (d2 < 16000) { var f = 22 / (d2 + 60); p.vx += dx * f; p.vy += dy * f; }
+        p.vx *= 0.965; p.vy *= 0.965;
+        var px = p.x, py = p.y;
+        p.x += p.vx; p.y += p.vy;
+        if (p.x < -8) p.x = W + 8; if (p.x > W + 8) p.x = -8;
+        if (p.y < -8) p.y = H + 8; if (p.y > H + 8) p.y = -8;
+        if (Math.abs(p.x - px) < 30 && Math.abs(p.y - py) < 30) {
+          ctx.strokeStyle = accent(0.34);
+          ctx.lineWidth = 1.1;
+          ctx.beginPath(); ctx.moveTo(px, py); ctx.lineTo(p.x, p.y); ctx.stroke();
+        }
+      }
+      requestAnimationFrame(step);
+    }
+    function staticFrame() {
+      for (var i = 0; i < parts.length; i++) {
+        var p = parts[i], a = fieldAngle(p.x, p.y, 0);
+        ctx.strokeStyle = accent(0.3); ctx.lineWidth = 1.1;
+        ctx.beginPath(); ctx.moveTo(p.x, p.y);
+        ctx.lineTo(p.x + Math.cos(a) * 14, p.y + Math.sin(a) * 14); ctx.stroke();
+      }
+    }
+    resize(); seed();
+    header.addEventListener('mousemove', function (e) {
+      var r = header.getBoundingClientRect();
+      mouse.x = e.clientX - r.left; mouse.y = e.clientY - r.top;
+    });
+    header.addEventListener('mouseleave', function () { mouse.x = -9999; mouse.y = -9999; });
+    window.addEventListener('resize', function () { resize(); seed(); if (reduced) staticFrame(); });
+    document.addEventListener('visibilitychange', function () {
+      visible = !document.hidden;
+      if (visible && !reduced) requestAnimationFrame(step);
+    });
+    if (reduced) { staticFrame(); } else { requestAnimationFrame(step); }
+  })();
+</script>

@@ -1,0 +1,382 @@
+---
+import Base from '../layouts/Base.astro';
+import Sky from '../components/Sky.astro';
+import Portrait from '../components/Portrait.astro';
+import { site, socials } from '../data/site';
+import { capabilities, experience, heroMetrics, selectedWork, toys } from '../data/cv';
+import { postcards, showPostcards } from '../data/postcards';
+
+const personLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: site.name,
+  jobTitle: site.title,
+  email: `mailto:${site.email}`,
+  url: Astro.site?.toString(),
+  image: new URL('/images/portrait.jpg', Astro.site).toString(),
+  address: { '@type': 'PostalAddress', addressLocality: 'Oulu', addressCountry: 'FI' },
+  alumniOf: [
+    { '@type': 'CollegeOrUniversity', name: 'University of Oulu' },
+    { '@type': 'CollegeOrUniversity', name: 'National University of Computer & Emerging Sciences (FAST-NUCES)' },
+  ],
+  sameAs: socials
+    .filter((s) => ['GitHub', 'LinkedIn', 'Instagram', 'Twitter'].includes(s.label) && s.href)
+    .map((s) => s.href),
+};
+---
+
+<Base>
+  <Fragment slot="head">
+    <script type="application/ld+json" set:html={JSON.stringify(personLd)} />
+  </Fragment>
+  <header class="hero-zone">
+    <Sky polaris />
+    <div class="wrap hero">
+      <Portrait />
+      <p class="kicker">{site.title} · {site.location}</p>
+      <h1>{site.name}</h1>
+      <p class="lede">
+        I design, build and evaluate <strong>machine learning systems</strong>: deep learning
+        and machine vision, NLP and retrieval-augmented LLMs, and the data and evaluation work
+        that takes them from prototype to delivery. MSc in Computer Science and Engineering (AI)
+        from the University of Oulu, 2026, on top of four years in industry across development,
+        consulting and technical project management.
+      </p>
+      <p class="obs-line">
+        {heroMetrics.map((m) => (
+          <span><b>{m.value}</b> · {m.label}</span>
+        ))}
+      </p>
+      <div class="ctas">
+        <a class="btn" href="/work">View work</a>
+        <a class="btn ghost" href="/cv">Read the CV</a>
+      </div>
+    </div>
+    <a class="sky-note" href="/playground">this sky is playable <i>✦</i> there's a whole playground</a>
+  </header>
+
+  <div class="wrap">
+    <section id="range" data-sec="01">
+      <p class="sec-label">What I do</p>
+      <hr class="sec-rule" />
+      <div class="fields">
+        {capabilities.map((c) => (
+          <div class="field">
+            <h2>{c.title}</h2>
+            <ul>
+              {c.items.map((item) => (
+                <li>{item}</li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <section id="work" data-sec="02">
+      <p class="sec-label">Selected work <span class="count">4 of 16</span></p>
+      <hr class="sec-rule" />
+      {selectedWork.map((w) => (
+        <article class="work-row">
+          <div class="meta">
+            {w.meta.map((line) => (
+              <span>{line}<br /></span>
+            ))}
+          </div>
+          <div>
+            <h2><a href={w.links[0].href} target="_blank" rel="noopener">{w.title}</a></h2>
+            <p>{w.desc}</p>
+            <p class="metrics">{w.metrics}</p>
+            <div class="links">
+              {w.links.map((l) => (
+                <a href={l.href} target="_blank" rel="noopener">{l.label}</a>
+              ))}
+            </div>
+          </div>
+        </article>
+      ))}
+      <a class="all-link" href="/work">All work <i>✦</i> 16 entries</a>
+    </section>
+
+    <section id="playground" data-sec="03">
+      <p class="sec-label">Playground <span class="count">toys, not work</span></p>
+      <div class="toys">
+        {toys.map((t) => (
+          <a class="toy" href={t.href}>
+            <canvas class="preview" data-preview={t.id} aria-hidden="true"></canvas>
+            <h2>{t.title}</h2>
+            <p>{t.desc}</p>
+            <span class="tag">{t.tag}</span>
+          </a>
+        ))}
+      </div>
+      <a class="all-link" href="/playground">Open the playground <i>✦</i></a>
+    </section>
+
+    <section id="experience" data-sec="04">
+      <p class="sec-label">Experience</p>
+      <hr class="sec-rule" />
+      {experience.map((e) => (
+        <div class="exp-row">
+          <span class="years">{e.years}</span>
+          <span class="role">{e.role}</span>
+          <span class="org">{e.org}</span>
+        </div>
+      ))}
+    </section>
+
+    {showPostcards && (
+      <section id="postcards">
+        <p class="sec-label">Postcards <span class="count">from instagram</span></p>
+        <hr class="sec-rule" />
+        <div class="cards-grid">
+          {postcards.map((p) => (
+            <a class="postcard" href={p.href} target="_blank" rel="noopener">
+              <img src={p.img} alt={p.alt} width="600" height="600" loading="lazy" />
+              <span class="cap">
+                <span>{p.caption}</span>
+                <span class="out">view post ↗</span>
+              </span>
+            </a>
+          ))}
+        </div>
+      </section>
+    )}
+  </div>
+</Base>
+
+<style>
+  .hero-zone { position: relative; overflow: hidden; }
+  /* a faint warm nebula near the pole star, behind the canvas */
+  .hero-zone::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background: radial-gradient(640px 420px at 78% 16%, hsl(var(--accent-h) 60% 52% / 0.09), transparent 70%);
+  }
+  /* telescope-view vignette, above the canvas, below the text: gentle,
+     never opaque, so the starfield stays alive at the edges */
+  .hero-zone::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background: radial-gradient(
+      145% 120% at 50% 0%,
+      transparent 68%,
+      color-mix(in srgb, var(--bg) 72%, transparent) 100%
+    );
+  }
+  .hero { position: relative; z-index: 1; padding-top: 84px; padding-bottom: 96px; }
+  .hero :global(.portrait) { margin-bottom: 30px; }
+  .kicker {
+    font-size: 12.5px;
+    letter-spacing: 0.26em;
+    text-transform: uppercase;
+    color: var(--brass);
+    margin-bottom: 26px;
+  }
+  .kicker::before { content: '✦'; margin-right: 12px; }
+  h1 {
+    font-family: var(--ff-serif);
+    font-size: clamp(50px, 8vw, 84px);
+    font-weight: 500;
+    letter-spacing: 0.005em;
+    line-height: 1.05;
+    margin-bottom: 30px;
+  }
+  .lede { max-width: 60ch; color: var(--muted); font-size: 18px; }
+  .lede strong { color: var(--ink); font-weight: 600; }
+  .obs-line {
+    margin-top: 34px;
+    font-family: var(--ff-mono);
+    font-size: 13px;
+    color: var(--faint);
+    font-variant-numeric: tabular-nums;
+  }
+  .obs-line span { margin-right: 26px; white-space: nowrap; display: inline-block; }
+  .obs-line b { color: var(--brass); font-weight: 600; }
+  .ctas { display: flex; gap: 16px; margin-top: 40px; flex-wrap: wrap; }
+
+  /* corner note: the hero sky itself is interactive, and there is more */
+  .sky-note {
+    position: absolute;
+    right: 26px;
+    bottom: 20px;
+    z-index: 1;
+    font-family: var(--ff-mono);
+    font-size: 11.5px;
+    letter-spacing: 0.06em;
+    color: var(--faint);
+  }
+  .sky-note i { color: var(--brass); font-style: normal; font-size: 10px; }
+  .sky-note:hover { color: var(--brass); }
+
+  section { padding: 76px 0 4px; }
+  section#range { padding-top: 64px; }
+
+  /* atlas numerals: big faint plate numbers in the left gutter */
+  @media (min-width: 1440px) {
+    section[data-sec] { position: relative; }
+    section[data-sec]::before {
+      content: attr(data-sec);
+      position: absolute;
+      left: -158px;
+      top: 66px;
+      width: 110px;
+      text-align: right;
+      font-family: var(--ff-serif);
+      font-style: italic;
+      font-size: 88px;
+      font-weight: 440;
+      line-height: 1;
+      color: var(--faint);
+      opacity: 0.16;
+      pointer-events: none;
+    }
+  }
+
+  @media (min-width: 1600px) {
+    .lede { font-size: 19.5px; }
+    .work-row p { font-size: 16px; }
+    .field li { font-size: 15.5px; }
+    .toy p { font-size: 15.5px; }
+    .exp-row .role { font-size: 16.5px; }
+    .exp-row .org { font-size: 15px; }
+  }
+
+  .fields { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 30px; margin-top: 16px; }
+  .field h2 { font-family: var(--ff-serif); font-size: 19px; font-weight: 500; margin-bottom: 10px; }
+  .field ul { list-style: none; padding: 0; margin: 0; }
+  .field li { color: var(--muted); font-size: 14.5px; padding: 5px 0; border-bottom: 1px solid var(--hairline); }
+  .field li:last-child { border-bottom: 0; }
+
+  .work-row {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    gap: 26px;
+    padding: 30px 0;
+    border-bottom: 1px solid var(--hairline);
+  }
+  .work-row .meta { font-family: var(--ff-mono); font-size: 12px; color: var(--faint); line-height: 1.9; }
+  .work-row h2 {
+    font-family: var(--ff-serif);
+    font-size: 25px;
+    font-weight: 500;
+    letter-spacing: 0.005em;
+    margin-bottom: 10px;
+  }
+  .work-row h2 a:hover { color: var(--brass); }
+  .work-row p { color: var(--muted); font-size: 15px; max-width: 58ch; }
+  .work-row .metrics {
+    margin-top: 14px;
+    font-family: var(--ff-mono);
+    font-size: 13px;
+    color: var(--brass);
+    font-variant-numeric: tabular-nums;
+  }
+  .work-row .links { margin-top: 10px; display: flex; gap: 20px; font-size: 13.5px; }
+  .work-row .links a { color: var(--muted); border-bottom: 1px solid var(--hairline); padding-bottom: 1px; }
+  .work-row .links a:hover { color: var(--brass); border-color: var(--brass-line); }
+  .all-link {
+    display: inline-block;
+    margin-top: 26px;
+    font-size: 12.5px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .all-link i { color: var(--brass); font-style: normal; }
+  .all-link:hover { color: var(--brass); }
+
+  .exp-row {
+    display: grid;
+    grid-template-columns: 150px 1fr auto;
+    gap: 18px;
+    align-items: baseline;
+    padding: 16px 2px;
+    border-bottom: 1px solid var(--hairline);
+  }
+  .exp-row .years { font-family: var(--ff-mono); font-size: 12.5px; color: var(--faint); font-variant-numeric: tabular-nums; }
+  .exp-row .role { font-weight: 600; font-size: 15.5px; }
+  .exp-row .org { color: var(--muted); font-size: 14px; text-align: right; }
+
+  /* min 320px so four cards sit 2x2 on desktop instead of 3+1 */
+  .toys { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 34px 30px; margin-top: 6px; }
+  .toy { display: block; border-top: 1px solid var(--hairline); padding-top: 18px; transition: border-color 0.15s ease; }
+  .toy:hover { border-top-color: var(--brass-line); color: inherit; }
+  .toy:hover h2 { color: var(--brass); }
+  .toy .preview {
+    display: block;
+    width: 100%;
+    height: 88px;
+    margin-bottom: 16px;
+    background: var(--bg-deep);
+    border: 1px solid var(--hairline);
+    border-radius: 4px;
+    transition: border-color 0.15s ease;
+  }
+  .toy:hover .preview { border-color: var(--brass-line); }
+  .toy h2 { font-family: var(--ff-serif); font-style: italic; font-size: 19px; font-weight: 500; margin-bottom: 8px; }
+  .toy h2::before { content: '✦ '; color: var(--brass); font-style: normal; font-size: 13px; vertical-align: 2px; }
+  .toy p { color: var(--muted); font-size: 14.5px; }
+  .toy .tag {
+    display: inline-block;
+    margin-top: 12px;
+    font-family: var(--ff-mono);
+    font-size: 11px;
+    color: var(--brass);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .cards-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 18px; margin-top: 16px; }
+  .postcard {
+    display: block;
+    border: 1px solid var(--hairline);
+    background: var(--panel);
+    transition: border-color 0.15s ease, transform 0.15s ease;
+  }
+  .postcard:hover { border-color: var(--brass-line); transform: translateY(-2px); }
+  .postcard img { display: block; width: 100%; height: auto; aspect-ratio: 1 / 1; object-fit: cover; }
+  .postcard .cap {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 10px 12px;
+    font-family: var(--ff-mono);
+    font-size: 11.5px;
+    color: var(--faint);
+  }
+  .postcard .out { color: var(--muted); }
+  .postcard:hover .out { color: var(--brass); }
+
+  @media (max-width: 760px) {
+    .hero { padding-top: 56px; padding-bottom: 64px; }
+    .sky-note { right: 18px; bottom: 12px; font-size: 10.5px; }
+    .obs-line span { display: block; margin: 0 0 6px; }
+    .work-row { grid-template-columns: 1fr; gap: 10px; padding: 24px 0; }
+    .exp-row { grid-template-columns: 1fr; gap: 2px; }
+    .exp-row .org { text-align: left; }
+    section { padding: 56px 0 4px; }
+  }
+</style>
+
+<script>
+  /* micro-previews load lazily, the same way playground widgets do */
+  const grid = document.querySelector('.toys');
+  if (grid) {
+    const io = new IntersectionObserver(
+      (ents) => {
+        if (!ents.some((e) => e.isIntersecting)) return;
+        io.disconnect();
+        import('../scripts/toy-previews').then((m) => m.default(grid as HTMLElement));
+      },
+      { rootMargin: '250px' }
+    );
+    io.observe(grid);
+  }
+</script>

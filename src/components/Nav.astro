@@ -1,0 +1,192 @@
+---
+import { nav } from '../data/site';
+const path = Astro.url.pathname;
+const isActive = (href: string) => path === href || path.startsWith(href + '/');
+---
+
+<div class="wrap">
+  <nav aria-label="Main">
+    <a class="brand" href="/">Usama<i> ✦ </i>Raheel</a>
+
+    <div class="right">
+      <div class="links" id="nav-links">
+        {nav.map((item) => (
+          <a href={item.href} aria-current={isActive(item.href) ? 'page' : undefined}>
+            {item.label}{item.live && <i class="live" aria-hidden="true" title="live widgets"></i>}
+          </a>
+        ))}
+        <button class="nav-ask ask-open" type="button">Ask<i aria-hidden="true"> ✦</i></button>
+      </div>
+      <button class="theme" id="theme-toggle" aria-label="Toggle color theme" title="Toggle theme">
+        <span class="moon" aria-hidden="true">☾</span>
+        <span class="sun" aria-hidden="true">☀</span>
+      </button>
+      <button class="burger" id="menu-open" aria-label="Open menu" aria-controls="menu" aria-expanded="false">✦</button>
+    </div>
+  </nav>
+</div>
+
+<div class="menu" id="menu" hidden>
+  <div class="menu-inner">
+    <button class="close" id="menu-close" aria-label="Close menu">✕</button>
+    {nav.map((item) => (
+      <a href={item.href} aria-current={isActive(item.href) ? 'page' : undefined}>
+        {item.label}{item.live && <i class="live" aria-hidden="true"></i>}
+      </a>
+    ))}
+    <button class="menu-ask ask-open" type="button">Ask<i aria-hidden="true"> ✦</i></button>
+  </div>
+</div>
+
+<style>
+  nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 30px 0;
+  }
+  .brand { font-family: var(--ff-serif); font-size: 19px; letter-spacing: 0.02em; }
+  .brand i { color: var(--brass); font-style: normal; }
+  .right { display: flex; align-items: center; gap: 22px; }
+  .links { display: flex; gap: 30px; align-items: center; }
+  .links a {
+    font-size: 13px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .links a:hover { color: var(--brass); }
+  .links a[aria-current='page'] { color: var(--brass); }
+
+  .nav-ask {
+    background: none;
+    border: 0;
+    padding: 0;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 13px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .nav-ask i, .menu-ask i {
+    color: var(--brass);
+    font-style: normal;
+    text-shadow: 0 0 9px hsl(var(--accent-h) 60% 60% / 0.5);
+  }
+  .nav-ask:hover { color: var(--brass); }
+
+  /* the playground runs live widgets: a small breathing brass star */
+  .live {
+    display: inline-block;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--brass);
+    box-shadow: 0 0 8px hsl(var(--accent-h) 60% 60% / 0.65);
+    margin-left: 7px;
+    vertical-align: 2px;
+    animation: live-breathe 3.2s ease-in-out infinite;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .live { animation: none; }
+  }
+  @keyframes live-breathe {
+    0%, 100% { opacity: 0.55; }
+    50% { opacity: 1; }
+  }
+
+  .theme, .burger, .close {
+    background: none;
+    border: 1px solid var(--hairline);
+    border-radius: 4px;
+    color: var(--muted);
+    font-size: 14px;
+    line-height: 1;
+    padding: 6px 9px;
+    cursor: pointer;
+  }
+  .theme:hover, .burger:hover, .close:hover { color: var(--brass); border-color: var(--brass-line); }
+  /* moon shows in dark (click goes light), sun shows in light */
+  .theme .sun { display: none; }
+  :global(:root[data-theme='light']) .theme .moon { display: none; }
+  :global(:root[data-theme='light']) .theme .sun { display: inline; }
+
+  .burger { display: none; }
+
+  .menu {
+    position: fixed;
+    inset: 0;
+    z-index: 40;
+    background: var(--bg);
+  }
+  .menu[hidden] { display: none; }
+  .menu-inner {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 90px 36px;
+  }
+  .menu a {
+    font-family: var(--ff-serif);
+    font-size: 34px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--hairline);
+  }
+  .menu a[aria-current='page'] { color: var(--brass); }
+  .menu-ask {
+    background: none;
+    border: 0;
+    border-bottom: 1px solid var(--hairline);
+    padding: 10px 0;
+    cursor: pointer;
+    text-align: left;
+    color: var(--ink);
+    font-family: var(--ff-serif);
+    font-size: 34px;
+  }
+  .menu .close { position: absolute; top: 30px; right: 28px; font-size: 16px; padding: 8px 11px; }
+
+  @media (max-width: 760px) {
+    nav { padding: 22px 0; }
+    .links { display: none; }
+    .burger { display: block; }
+  }
+
+  @media print {
+    .wrap, .menu { display: none; }
+  }
+</style>
+
+<script>
+  // theme toggle: stamp data-theme, persist, tell the sky
+  const toggle = document.getElementById('theme-toggle');
+  toggle?.addEventListener('click', () => {
+    const root = document.documentElement;
+    const current = root.dataset.theme || 'dark';
+    const next = current === 'dark' ? 'light' : 'dark';
+    root.dataset.theme = next;
+    try { localStorage.setItem('theme', next); } catch {}
+    window.dispatchEvent(new CustomEvent('themechange'));
+  });
+
+  // compact-screen menu
+  const menu = document.getElementById('menu');
+  const openBtn = document.getElementById('menu-open');
+  const closeBtn = document.getElementById('menu-close');
+  function setMenu(open: boolean) {
+    if (!menu || !openBtn) return;
+    menu.hidden = !open;
+    openBtn.setAttribute('aria-expanded', String(open));
+    document.body.style.overflow = open ? 'hidden' : '';
+    if (open) closeBtn?.focus();
+    else openBtn.focus();
+  }
+  openBtn?.addEventListener('click', () => setMenu(true));
+  closeBtn?.addEventListener('click', () => setMenu(false));
+  /* the Ask entry opens the assistant overlay; close the menu underneath */
+  menu?.querySelector('.menu-ask')?.addEventListener('click', () => setMenu(false));
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') setMenu(false);
+  });
+</script>

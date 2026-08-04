@@ -1,0 +1,333 @@
+<title>Usama Raheel · C2 Terminal</title>
+<style>
+  :root {
+    --accent-h: 145;
+    --phos: hsl(var(--accent-h) 62% 56%);
+    --phos-dim: hsl(var(--accent-h) 62% 56% / 0.16);
+    --phos-line: hsl(var(--accent-h) 62% 56% / 0.4);
+    --phos-glow: hsl(var(--accent-h) 62% 56% / 0.3);
+    --amber: #d9a441;
+    --bg: #0b0e0c;
+    --panel: #10140f;
+    --border: #1c261d;
+    --hairline: #151d16;
+    --ink: #c2cdbf;
+    --muted: #7e8b7c;
+    --faint: #57634f;
+    --mono: "Cascadia Code", "Cascadia Mono", Consolas, "JetBrains Mono", monospace;
+    color-scheme: dark;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { background: var(--bg); }
+  body {
+    background: var(--bg); color: var(--ink);
+    font-family: var(--mono); font-size: 14.5px; line-height: 1.7;
+  }
+  /* CRT wash: scanlines + vignette, both faint */
+  body::before {
+    content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 50;
+    background: repeating-linear-gradient(to bottom, rgba(255,255,255,0.018) 0 1px, transparent 1px 3px);
+  }
+  body::after {
+    content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 49;
+    background: radial-gradient(ellipse at 50% 40%, transparent 62%, rgba(0,0,0,0.4) 100%);
+  }
+  a { color: var(--ink); text-decoration: none; }
+  a:hover { color: var(--phos); }
+  a:focus-visible, input:focus-visible { outline: 2px solid var(--phos); outline-offset: 3px; }
+  .wrap { max-width: 980px; margin: 0 auto; padding: 0 24px; }
+  .glow { color: var(--phos); text-shadow: 0 0 10px var(--phos-glow); }
+
+  /* ---------- nav ---------- */
+  nav { display: flex; justify-content: space-between; align-items: center; padding: 22px 0; font-size: 13.5px; }
+  .brand { color: var(--muted); }
+  .brand .glow { font-weight: 600; }
+  .nav-links { display: flex; gap: 24px; align-items: center; }
+  .nav-links a { color: var(--muted); }
+  .nav-links a::before { content: "./"; color: var(--faint); }
+  .nav-links a:hover { color: var(--phos); }
+  .kbd { border: 1px solid var(--border); padding: 2px 7px; color: var(--faint); font-size: 12px; background: var(--panel); }
+
+  /* ---------- terminal hero ---------- */
+  .term {
+    margin: 40px 0 0; border: 1px solid var(--border); background: var(--panel);
+    border-radius: 6px; overflow: hidden;
+    box-shadow: 0 0 40px rgba(70, 217, 126, 0.05), 0 18px 50px rgba(0,0,0,0.5);
+  }
+  .term-bar {
+    display: flex; align-items: center; gap: 8px; padding: 10px 14px;
+    border-bottom: 1px solid var(--border); background: #0d110d;
+  }
+  .dot { width: 11px; height: 11px; border-radius: 50%; background: #263528; }
+  .dot.r { background: #3a2c26; } .dot.y { background: #3a3626; }
+  .term-title { margin-left: 10px; font-size: 12px; color: var(--faint); }
+  .term-body { padding: 26px 26px 30px; min-height: 330px; font-size: 15px; }
+  .term-body .ps1 { color: var(--faint); }
+  .term-body .cmd { color: var(--ink); }
+  .term-body .out { color: var(--muted); display: block; white-space: pre-wrap; }
+  .term-body .out.name { color: var(--ink); font-size: clamp(22px, 4.2vw, 34px); font-weight: 700; letter-spacing: 0.01em; line-height: 1.3; }
+  .term-body .out.name .glow { font-weight: 700; }
+  .term-body .metric { color: var(--amber); font-variant-numeric: tabular-nums; }
+  .cursor {
+    display: inline-block; width: 9px; height: 18px; background: var(--phos);
+    vertical-align: text-bottom; box-shadow: 0 0 8px var(--phos-glow);
+    animation: blink 1.1s steps(1) infinite;
+  }
+  @keyframes blink { 50% { opacity: 0; } }
+  .term-hint { text-align: right; font-size: 11.5px; color: var(--faint); padding: 0 14px 10px; }
+
+  /* ---------- sections ---------- */
+  section { padding: 64px 0 6px; }
+  .prompt-line { font-size: 14.5px; color: var(--muted); margin-bottom: 26px; }
+  .prompt-line .ps1 { color: var(--faint); }
+  .prompt-line .count { float: right; color: var(--faint); margin-left: 16px; }
+  .prompt-line .glow { font-weight: 600; }
+
+  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(288px, 1fr)); gap: 16px; }
+  .card {
+    border: 1px solid var(--border); background: var(--panel); padding: 20px 20px 16px;
+    display: flex; flex-direction: column; gap: 10px; border-radius: 4px;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  }
+  .card:hover { border-color: var(--phos-line); box-shadow: 0 0 24px rgba(70, 217, 126, 0.07); }
+  .card .meta { font-size: 11.5px; color: var(--faint); }
+  .card .meta::before { content: "-- "; }
+  .card h3 { font-size: 16px; font-weight: 700; color: var(--phos); text-shadow: 0 0 12px var(--phos-glow); }
+  .card p { color: var(--muted); font-size: 13.5px; flex: 1; }
+  .card .metrics {
+    font-size: 12.5px; color: var(--amber); font-variant-numeric: tabular-nums;
+    border-top: 1px dashed var(--hairline); padding-top: 10px;
+  }
+  .card .links { display: flex; gap: 14px; font-size: 12.5px; }
+  .card .links a { color: var(--muted); }
+  .card .links a::before { content: "[ "; color: var(--faint); }
+  .card .links a::after { content: " ]"; color: var(--faint); }
+
+  /* experience: history output */
+  .hist { border: 1px solid var(--border); background: var(--panel); border-radius: 4px; padding: 6px 0; }
+  .hrow {
+    display: grid; grid-template-columns: 56px 130px 1fr auto; gap: 14px;
+    padding: 9px 18px; font-size: 13.5px; align-items: baseline;
+  }
+  .hrow + .hrow { border-top: 1px solid var(--hairline); }
+  .hrow:hover { background: var(--phos-dim); }
+  .hrow .idx { color: var(--faint); text-align: right; font-variant-numeric: tabular-nums; }
+  .hrow .years { color: var(--faint); font-variant-numeric: tabular-nums; }
+  .hrow .role { color: var(--ink); font-weight: 600; }
+  .hrow .org { color: var(--muted); text-align: right; }
+
+  /* playground */
+  .toys { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
+  .toy { border: 1px dashed var(--border); padding: 20px; border-radius: 4px; }
+  .toy:hover { border-color: var(--phos-line); }
+  .toy h4 { font-size: 13.5px; color: var(--phos); margin-bottom: 8px; font-weight: 700; }
+  .toy h4::before { content: "> "; color: var(--faint); }
+  .toy p { color: var(--muted); font-size: 13px; }
+  .toy .tag { display: inline-block; margin-top: 12px; font-size: 10.5px; color: var(--amber); letter-spacing: 0.1em; text-transform: uppercase; }
+
+  /* ---------- status bar footer ---------- */
+  footer { margin-top: 80px; }
+  .foot-links { display: flex; gap: 22px; font-size: 13px; padding: 18px 0; }
+  .foot-links a { color: var(--muted); }
+  .foot-links a::before { content: "[ "; color: var(--faint); }
+  .foot-links a::after { content: " ]"; color: var(--faint); }
+  .statusbar {
+    display: flex; justify-content: space-between; align-items: center; gap: 14px; flex-wrap: wrap;
+    border-top: 1px solid var(--border); background: var(--panel);
+    padding: 9px 24px; font-size: 12px; color: var(--faint);
+  }
+  .statusbar .mode { color: var(--bg); background: var(--phos); padding: 1px 9px; font-weight: 700; }
+  .statusbar .right { display: flex; gap: 18px; align-items: center; }
+  .knob { display: flex; align-items: center; gap: 8px; }
+  .knob input {
+    appearance: none; -webkit-appearance: none; width: 90px; height: 3px;
+    background: linear-gradient(to right, hsl(0 60% 50%), hsl(90 60% 50%), hsl(180 60% 50%), hsl(270 60% 50%), hsl(360 60% 50%));
+    cursor: pointer;
+  }
+  .knob input::-webkit-slider-thumb {
+    appearance: none; -webkit-appearance: none; width: 12px; height: 12px; border-radius: 50%;
+    background: var(--phos); border: 2px solid var(--bg);
+  }
+  .variant-tag {
+    position: fixed; right: 12px; bottom: 46px; z-index: 51;
+    font-size: 11px; letter-spacing: 0.08em; color: var(--faint);
+    background: var(--panel); border: 1px solid var(--border); padding: 5px 10px;
+  }
+
+  @media (max-width: 760px) {
+    .hrow { grid-template-columns: 1fr; gap: 1px; }
+    .hrow .idx { display: none; }
+    .hrow .org { text-align: left; }
+    .nav-links .hide-s { display: none; }
+    .term-body { min-height: 380px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; animation: none !important; }
+    .cursor { animation: none; }
+  }
+</style>
+
+<div class="wrap">
+  <nav>
+    <span class="brand">guest@<span class="glow">usamaraheel</span>:~</span>
+    <span class="nav-links">
+      <a href="#work">work</a>
+      <a href="#cv">cv</a>
+      <a href="#playground">playground</a>
+      <a href="#" class="hide-s">about</a>
+      <span class="kbd">⌘K</span>
+    </span>
+  </nav>
+
+  <header>
+    <div class="term">
+      <div class="term-bar">
+        <span class="dot r"></span><span class="dot y"></span><span class="dot"></span>
+        <span class="term-title">usama@oulu: ~</span>
+      </div>
+      <div class="term-body" id="session" aria-label="Terminal introduction session"></div>
+      <p class="term-hint">click to skip typing</p>
+    </div>
+  </header>
+
+  <section id="work">
+    <p class="prompt-line"><span class="ps1">usama@oulu:~$</span> ls <span class="glow">work/</span> --selected <span class="count">3 of 16 entries</span></p>
+    <div class="cards">
+      <article class="card">
+        <p class="meta">msc thesis · valamis group / univ. of oulu · 2025-2026</p>
+        <h3>context_aware_rag/</h3>
+        <p>A RAG assistant that turns corporate learning data into business insights.
+           Hybrid retrieval (column mapping, intent detection, dense search) with two
+           LLM judges validated against human ratings.</p>
+        <p class="metrics">answer_quality=82.7% (+13.6) · MRR=0.96 · P@1=0.93</p>
+        <div class="links"><a href="#">thesis</a><a href="#">open access</a></div>
+      </article>
+      <article class="card">
+        <p class="meta">arXiv preprint · cs.LG · 2026</p>
+        <h3>railway_delays_fi/</h3>
+        <p>First publicly available dataset linking Finnish railway operations with
+           synchronized weather, 2018-2024: about 38.5M observations, 5,915 km of rail,
+           209 weather stations.</p>
+        <p class="metrics">obs=38.5M · xgboost MAE=2.73 min</p>
+        <div class="links"><a href="#">arxiv</a><a href="#">dataset</a></div>
+      </article>
+      <article class="card">
+        <p class="meta">university of oulu · 2025</p>
+        <h3>recipe_rag_500k/</h3>
+        <p>BM25, Sentence-BERT and hybrid retrieval with RAG over 500K+ recipes.
+           End-to-end: preprocessing, semantic indexing, structured filtering,
+           query expansion.</p>
+        <p class="metrics">NDCG@k=0.95 · MRR=1.0</p>
+        <div class="links"><a href="#">github</a></div>
+      </article>
+    </div>
+  </section>
+
+  <section id="cv">
+    <p class="prompt-line"><span class="ps1">usama@oulu:~$</span> history <span class="glow">--jobs</span></p>
+    <div class="hist">
+      <div class="hrow"><span class="idx">006</span><span class="years">2025-2026</span><span class="role">AI Research Engineer, Master's Thesis</span><span class="org">Valamis Group Oy</span></div>
+      <div class="hrow"><span class="idx">005</span><span class="years">2025</span><span class="role">AI Research Intern</span><span class="org">CWC, University of Oulu</span></div>
+      <div class="hrow"><span class="idx">004</span><span class="years">2023-2024</span><span class="role">Technical Project Manager</span><span class="org">ZeePalm</span></div>
+      <div class="hrow"><span class="idx">003</span><span class="years">2022</span><span class="role">Software Developer</span><span class="org">GrocerApp</span></div>
+      <div class="hrow"><span class="idx">002</span><span class="years">2021-2022</span><span class="role">Application Consultant</span><span class="org">Techlogix</span></div>
+      <div class="hrow"><span class="idx">001</span><span class="years">2020-2021</span><span class="role">Teaching Assistant</span><span class="org">FAST-NUCES</span></div>
+    </div>
+  </section>
+
+  <section id="playground">
+    <p class="prompt-line"><span class="ps1">usama@oulu:~$</span> ls <span class="glow">playground/</span></p>
+    <div class="toys">
+      <div class="toy">
+        <h4>optimizer_race</h4>
+        <p>Drop a marker on a loss surface and watch SGD, momentum and Adam find their way down.</p>
+        <span class="tag">building</span>
+      </div>
+      <div class="toy">
+        <h4>digit_sketchpad</h4>
+        <p>Draw a digit; a small network guesses it, running entirely in your browser.</p>
+        <span class="tag">building</span>
+      </div>
+      <div class="toy">
+        <h4>crt_mode</h4>
+        <p>The scanlines on this page. There is a knob in the status bar; the phosphor is yours.</p>
+        <span class="tag">live now</span>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="foot-links">
+      <a href="#">email</a><a href="#">github</a><a href="#">linkedin</a><a href="#">thesis</a>
+    </div>
+  </footer>
+</div>
+
+<div class="statusbar">
+  <span><span class="mode">GUEST</span>&nbsp;&nbsp;© 2026 usama raheel</span>
+  <span class="right">
+    <label class="knob">phosphor
+      <input type="range" min="0" max="360" value="145" aria-label="Shift the phosphor color">
+    </label>
+    <span>oulu, finland · 65°N</span>
+  </span>
+</div>
+
+<span class="variant-tag">mockup c2 · terminal</span>
+
+<script>
+  // phosphor knob
+  document.querySelector('.knob input').addEventListener('input', function (e) {
+    document.documentElement.style.setProperty('--accent-h', e.target.value);
+  });
+
+  // typed hero session
+  (function () {
+    var el = document.getElementById('session');
+    var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var lines = [
+      { t: 'cmd', ps1: true, text: 'whoami' },
+      { t: 'name', text: 'Usama Raheel · <span class="glow">AI Research Engineer</span>' },
+      { t: 'cmd', ps1: true, text: 'cat mission.txt' },
+      { t: 'out', text: 'I build and evaluate retrieval-augmented LLM systems: hybrid retrieval\npipelines, LLM-as-judge evaluation, and the engineering that takes them\nfrom prototype to delivery. MSc in Computer Science and Engineering (AI),\nUniversity of Oulu, 2026. Four years in industry before it.' },
+      { t: 'cmd', ps1: true, text: 'grep -E "quality|MRR" thesis/results.log' },
+      { t: 'out', text: 'answer_quality: <span class="metric">82.7%</span> (<span class="metric">+13.6 pts</span> vs baseline)\nretrieval: MRR <span class="metric">0.96</span> · P@1 <span class="metric">0.93</span> (deployed pipeline)' },
+      { t: 'cmd', ps1: true, text: '' }
+    ];
+    var li = 0, ci = 0, done = false, tid = null;
+
+    function render(upTo, partial) {
+      var html = '';
+      for (var i = 0; i <= upTo && i < lines.length; i++) {
+        var L = lines[i];
+        var full = (i < upTo) ? L.text : (partial === null ? L.text : L.text.slice(0, partial));
+        if (L.t === 'cmd') {
+          html += '<div><span class="ps1">usama@oulu:~$</span> <span class="cmd">' + full + '</span>' +
+                  ((i === upTo && i === lines.length - 1) ? ' <span class="cursor"></span>' : '') + '</div>';
+        } else {
+          html += '<span class="out ' + (L.t === 'name' ? 'name' : '') + '">' + full + '</span>';
+        }
+      }
+      el.innerHTML = html;
+    }
+    function finish() {
+      done = true; if (tid) clearTimeout(tid);
+      render(lines.length - 1, null);
+    }
+    function tick() {
+      if (done) return;
+      var L = lines[li];
+      var typed = L.t === 'cmd';                 // commands type, output prints whole
+      if (typed && ci <= L.text.length) {
+        render(li, ci); ci += 1;
+        tid = setTimeout(tick, 26);
+      } else {
+        render(li, null); li += 1; ci = 0;
+        if (li >= lines.length) { done = true; render(lines.length - 1, null); return; }
+        tid = setTimeout(tick, typed ? 60 : (lines[li].t === 'cmd' ? 420 : 160));
+      }
+    }
+    document.querySelector('.term').addEventListener('click', finish);
+    if (reduced) { finish(); } else { tick(); }
+  })();
+</script>

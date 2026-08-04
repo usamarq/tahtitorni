@@ -1,0 +1,205 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import PageHeader from '../../components/PageHeader.astro';
+import Sigil from '../../components/Sigil.astro';
+import { workGroups } from '../../data/work';
+
+const entries = (await getCollection('work')).sort((a, b) => a.data.order - b.data.order);
+const total = entries.length;
+
+/* Career timeline: one tick per entry, placed by its completion year.
+   Entries in the same year fan out slightly so every tick stays visible. */
+const YEAR_MIN = 2017;
+const YEAR_MAX = 2026;
+function yearOf(dates: string) {
+  const ys = dates.match(/20\d{2}/g);
+  return ys ? Number(ys[ys.length - 1]) : 2019; /* "BSc era" lands mid-degree */
+}
+const byYear = new Map<number, typeof entries>();
+for (const e of entries) {
+  const y = yearOf(e.data.dates);
+  byYear.set(y, [...(byYear.get(y) ?? []), e]);
+}
+const ticks = [...byYear.entries()].flatMap(([y, list]) =>
+  list.map((e, i) => {
+    const base = ((y - YEAR_MIN) / (YEAR_MAX - YEAR_MIN)) * 100;
+    const x = base + (i - (list.length - 1) / 2) * 1.7;
+    return { id: e.id, title: e.data.title, x: Math.min(99.2, Math.max(0.8, x)) };
+  })
+);
+---
+
+<Base
+  title="Work · Usama Raheel"
+  description="All 16 projects and publications: RAG and LLM systems, published research, applied ML coursework, robotics and embedded work."
+>
+  <PageHeader
+    sky
+    label="Work"
+    count={`${total} entries`}
+    title="Everything on the <em>chart</em>"
+    lede="From an 8051 door lock to a retrieval-augmented assistant in production evaluation: all of it, in five groups, newest line of work first. Each entry has its own page."
+  />
+
+  <div class="wrap">
+    <div class="timeline">
+      <span class="t-year">{YEAR_MIN}</span>
+      <div class="t-rule">
+        {ticks.map((t) => (
+          <a class="tick" href={`/work/${t.id}/`} style={`left:${t.x}%`} title={t.title} aria-label={t.title}></a>
+        ))}
+      </div>
+      <span class="t-year">{YEAR_MAX}</span>
+    </div>
+
+    {workGroups.map((g, gi) => {
+      const items = entries.filter((e) => e.data.group === g.id);
+      return (
+        <section data-sec={String(gi + 1).padStart(2, '0')}>
+          <p class="sec-label">{g.label}<span class="count">{items.length}</span></p>
+          <hr class="sec-rule" />
+          {items.map((e) => (
+            <article class="work-row">
+              <div class="meta">
+                <span>{e.data.kind}</span>
+                <span>{e.data.org}</span>
+                <span>{e.data.dates}</span>
+              </div>
+              <div>
+                <h2><a href={`/work/${e.id}/`}>{e.data.title}</a></h2>
+                <p>{e.data.blurb}</p>
+                {e.data.metrics && <p class="metrics">{e.data.metrics}</p>}
+              </div>
+              <a class="sig" href={`/work/${e.id}/`} aria-hidden="true" tabindex="-1">
+                <Sigil seed={e.id} size={40} />
+              </a>
+            </article>
+          ))}
+        </section>
+      );
+    })}
+  </div>
+</Base>
+
+<style>
+  .timeline {
+    display: flex;
+    align-items: flex-end;
+    gap: 14px;
+    margin-top: 26px;
+  }
+  .t-year {
+    font-family: var(--ff-mono);
+    font-size: 11.5px;
+    color: var(--faint);
+    line-height: 1;
+    transform: translateY(1px);
+  }
+  .t-rule {
+    position: relative;
+    flex: 1;
+    height: 16px;
+    border-bottom: 1px solid var(--hairline);
+  }
+  .tick {
+    position: absolute;
+    bottom: 0;
+    width: 24px;
+    height: 24px;
+    transform: translateX(-50%);
+  }
+  .tick::after {
+    content: '';
+    position: absolute;
+    left: calc(50% - 0.75px);
+    bottom: 0;
+    width: 1.5px;
+    height: 9px;
+    background: var(--brass-line);
+    transition: height 0.15s ease, background 0.15s ease;
+  }
+  .tick:hover::after,
+  .tick:focus-visible::after {
+    height: 15px;
+    background: var(--brass);
+    box-shadow: 0 0 8px hsl(var(--accent-h) 60% 60% / 0.6);
+  }
+
+  section { padding: 54px 0 4px; }
+  section:first-of-type { padding-top: 40px; }
+
+  .work-row {
+    display: grid;
+    grid-template-columns: 200px 1fr 56px;
+    gap: 26px;
+    padding: 26px 0;
+    border-bottom: 1px solid var(--hairline);
+    align-items: start;
+  }
+  .work-row:last-of-type { border-bottom: 0; }
+  .work-row .meta { display: flex; flex-direction: column; font-family: var(--ff-mono); font-size: 12px; color: var(--faint); line-height: 1.9; }
+  .work-row h2 {
+    font-family: var(--ff-serif);
+    font-size: 24px;
+    font-weight: 500;
+    letter-spacing: 0.005em;
+    margin-bottom: 8px;
+  }
+  .work-row h2 a:hover { color: var(--brass); }
+  .work-row p { color: var(--muted); font-size: 15px; max-width: 60ch; }
+  .work-row .metrics {
+    margin-top: 12px;
+    font-family: var(--ff-mono);
+    font-size: 12.5px;
+    color: var(--brass);
+    font-variant-numeric: tabular-nums;
+  }
+  .sig {
+    color: var(--faint);
+    justify-self: end;
+    margin-top: 6px;
+    transition: color 0.2s ease;
+  }
+  .work-row:hover .sig { color: var(--brass); }
+
+  @media (max-width: 760px) {
+    section { padding: 42px 0 4px; }
+    .work-row { grid-template-columns: 1fr; gap: 10px; padding: 22px 0; }
+    .sig { display: none; }
+  }
+
+  @media (min-width: 1440px) {
+    /* the career timeline breaks out of the column and spans the room */
+    .timeline {
+      width: min(1300px, calc(100vw - 140px));
+      position: relative;
+      left: 50%;
+      transform: translateX(-50%);
+      margin-top: 34px;
+    }
+
+    /* atlas numerals for the five groups */
+    section[data-sec] { position: relative; }
+    section[data-sec]::before {
+      content: attr(data-sec);
+      position: absolute;
+      left: -158px;
+      top: 46px;
+      width: 110px;
+      text-align: right;
+      font-family: var(--ff-serif);
+      font-style: italic;
+      font-size: 88px;
+      font-weight: 440;
+      line-height: 1;
+      color: var(--faint);
+      opacity: 0.16;
+      pointer-events: none;
+    }
+  }
+
+  @media (min-width: 1600px) {
+    .work-row p { font-size: 16px; }
+  }
+</style>

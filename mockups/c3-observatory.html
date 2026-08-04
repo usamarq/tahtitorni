@@ -1,0 +1,386 @@
+<title>Usama Raheel · C3 Observatory</title>
+<style>
+  :root {
+    --accent-h: 42;
+    --brass: hsl(var(--accent-h) 52% 56%);
+    --brass-dim: hsl(var(--accent-h) 52% 56% / 0.13);
+    --brass-line: hsl(var(--accent-h) 52% 56% / 0.45);
+    --bg: #0d1220;
+    --panel: #111729;
+    --hairline: #212a44;
+    --ink: #e9e5da;
+    --muted: #98a0b4;
+    --faint: #5f6880;
+    --serif: Georgia, "Times New Roman", serif;
+    --sans: "Segoe UI", system-ui, sans-serif;
+    --mono: "Cascadia Code", "Cascadia Mono", Consolas, monospace;
+    color-scheme: dark;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { background: var(--bg); }
+  body {
+    background: linear-gradient(to bottom, #0b0f1b 0%, var(--bg) 30%);
+    color: var(--ink); font-family: var(--sans); font-size: 16px; line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: var(--ink); text-decoration: none; }
+  a:hover { color: var(--brass); }
+  a:focus-visible, input:focus-visible { outline: 2px solid var(--brass); outline-offset: 3px; border-radius: 2px; }
+  .wrap { max-width: 1000px; margin: 0 auto; padding: 0 28px; }
+
+  /* ---------- nav ---------- */
+  nav { display: flex; justify-content: space-between; align-items: center; padding: 30px 0; }
+  .brand { font-family: var(--serif); font-size: 19px; letter-spacing: 0.02em; }
+  .brand i { color: var(--brass); font-style: normal; }
+  .nav-links { display: flex; gap: 30px; align-items: center; font-size: 13px; letter-spacing: 0.14em; text-transform: uppercase; }
+  .nav-links a { color: var(--muted); }
+  .nav-links a:hover { color: var(--brass); }
+  .kbd {
+    font-family: var(--mono); text-transform: none; letter-spacing: 0;
+    border: 1px solid var(--hairline); border-radius: 4px; padding: 2px 7px;
+    color: var(--faint); font-size: 12px;
+  }
+
+  /* ---------- hero ---------- */
+  header { position: relative; overflow: hidden; }
+  #sky {
+    position: absolute; inset: 0; z-index: 0;
+    -webkit-mask-image: linear-gradient(to bottom, black 62%, transparent 100%);
+    mask-image: linear-gradient(to bottom, black 62%, transparent 100%);
+  }
+  .hero { position: relative; z-index: 1; padding: 110px 0 96px; }
+  .kicker {
+    font-size: 12.5px; letter-spacing: 0.26em; text-transform: uppercase;
+    color: var(--brass); margin-bottom: 26px;
+  }
+  .kicker::before { content: "✦"; margin-right: 12px; }
+  h1 {
+    font-family: var(--serif); font-size: clamp(50px, 8vw, 84px); font-weight: 500;
+    letter-spacing: 0.005em; line-height: 1.05; text-wrap: balance; margin-bottom: 30px;
+  }
+  .lede { max-width: 60ch; color: var(--muted); font-size: 18px; }
+  .lede strong { color: var(--ink); font-weight: 600; }
+  .obs-line {
+    margin-top: 34px; font-family: var(--mono); font-size: 13px; color: var(--faint);
+    font-variant-numeric: tabular-nums;
+  }
+  .obs-line b { color: var(--brass); font-weight: 600; }
+  .obs-line span { margin-right: 26px; white-space: nowrap; display: inline-block; }
+  .ctas { display: flex; gap: 16px; margin-top: 40px; flex-wrap: wrap; }
+  .btn {
+    font-size: 12.5px; letter-spacing: 0.18em; text-transform: uppercase;
+    padding: 12px 24px; border: 1px solid var(--brass-line); color: var(--brass);
+    border-radius: 2px; transition: background 0.15s ease;
+  }
+  .btn:hover { background: var(--brass-dim); color: var(--brass); }
+  .btn.ghost { border-color: var(--hairline); color: var(--muted); }
+  .btn.ghost:hover { color: var(--ink); background: transparent; border-color: var(--faint); }
+
+  /* ---------- sections ---------- */
+  section { padding: 76px 0 4px; }
+  .sec-label {
+    display: flex; align-items: baseline; gap: 14px;
+    font-size: 12px; letter-spacing: 0.24em; text-transform: uppercase; color: var(--muted);
+    margin-bottom: 8px;
+  }
+  .sec-label::before { content: "✦"; color: var(--brass); letter-spacing: 0; }
+  .sec-label .count { margin-left: auto; font-family: var(--mono); letter-spacing: 0; text-transform: none; color: var(--faint); font-size: 12px; }
+  .sec-rule { border: 0; border-top: 1px solid var(--hairline); margin-bottom: 10px; }
+
+  /* work as editorial rows */
+  .work-row {
+    display: grid; grid-template-columns: 200px 1fr; gap: 26px;
+    padding: 30px 0; border-bottom: 1px solid var(--hairline);
+  }
+  .work-row .meta { font-family: var(--mono); font-size: 12px; color: var(--faint); line-height: 1.9; }
+  .work-row h3 { font-family: var(--serif); font-size: 25px; font-weight: 500; letter-spacing: 0.005em; margin-bottom: 10px; text-wrap: balance; }
+  .work-row h3 a:hover { color: var(--brass); }
+  .work-row p { color: var(--muted); font-size: 15px; max-width: 58ch; }
+  .work-row .metrics {
+    margin-top: 14px; font-family: var(--mono); font-size: 13px; color: var(--brass);
+    font-variant-numeric: tabular-nums;
+  }
+  .work-row .links { margin-top: 10px; display: flex; gap: 20px; font-size: 13.5px; }
+  .work-row .links a { color: var(--muted); border-bottom: 1px solid var(--hairline); padding-bottom: 1px; }
+  .work-row .links a:hover { color: var(--brass); border-color: var(--brass-line); }
+
+  /* experience */
+  .exp-row {
+    display: grid; grid-template-columns: 150px 1fr auto; gap: 18px; align-items: baseline;
+    padding: 16px 2px; border-bottom: 1px solid var(--hairline);
+  }
+  .exp-row .years { font-family: var(--mono); font-size: 12.5px; color: var(--faint); font-variant-numeric: tabular-nums; }
+  .exp-row .role { font-weight: 600; font-size: 15.5px; }
+  .exp-row .org { color: var(--muted); font-size: 14px; text-align: right; }
+
+  /* playground */
+  .toys { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px; margin-top: 6px; }
+  .toy { border-top: 1px solid var(--hairline); padding-top: 18px; }
+  .toy h4 { font-family: var(--serif); font-style: italic; font-size: 19px; font-weight: 500; margin-bottom: 8px; }
+  .toy h4::before { content: "✦ "; color: var(--brass); font-style: normal; font-size: 13px; vertical-align: 2px; }
+  .toy p { color: var(--muted); font-size: 14.5px; }
+  .toy .tag {
+    display: inline-block; margin-top: 12px; font-family: var(--mono); font-size: 11px;
+    color: var(--brass); letter-spacing: 0.12em; text-transform: uppercase;
+  }
+
+  /* ---------- footer ---------- */
+  footer { margin-top: 90px; border-top: 1px solid var(--hairline); padding: 28px 0 46px; }
+  .foot { display: flex; justify-content: space-between; align-items: center; gap: 20px; flex-wrap: wrap; }
+  .foot-links { display: flex; gap: 26px; font-size: 12.5px; letter-spacing: 0.16em; text-transform: uppercase; }
+  .foot-links a { color: var(--muted); }
+  .copy { font-family: var(--mono); font-size: 12px; color: var(--faint); }
+  .knob { display: flex; align-items: center; gap: 10px; font-family: var(--mono); font-size: 11px; color: var(--faint); }
+  .knob input {
+    appearance: none; -webkit-appearance: none; width: 110px; height: 3px; border-radius: 2px;
+    background: linear-gradient(to right, hsl(0 45% 55%), hsl(60 45% 55%), hsl(150 45% 55%), hsl(220 45% 55%), hsl(300 45% 55%), hsl(360 45% 55%));
+    cursor: pointer;
+  }
+  .knob input::-webkit-slider-thumb {
+    appearance: none; -webkit-appearance: none; width: 13px; height: 13px; border-radius: 50%;
+    background: var(--brass); border: 2px solid var(--bg);
+  }
+  .variant-tag {
+    position: fixed; right: 14px; bottom: 14px; z-index: 5;
+    font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em;
+    color: var(--faint); background: var(--panel); border: 1px solid var(--hairline);
+    padding: 5px 10px; border-radius: 4px;
+  }
+
+  @media (max-width: 760px) {
+    .hero { padding: 72px 0 64px; }
+    .work-row { grid-template-columns: 1fr; gap: 10px; padding: 24px 0; }
+    .exp-row { grid-template-columns: 1fr; gap: 2px; }
+    .exp-row .org { text-align: left; }
+    .nav-links { gap: 18px; }
+    .nav-links .hide-s { display: none; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; animation: none !important; }
+  }
+</style>
+
+<div class="wrap">
+  <nav>
+    <span class="brand">Usama<i> ✦ </i>Raheel</span>
+    <span class="nav-links">
+      <a href="#work">Work</a>
+      <a href="#cv">CV</a>
+      <a href="#playground">Playground</a>
+      <a href="#" class="hide-s">About</a>
+      <span class="kbd">⌘K</span>
+    </span>
+  </nav>
+</div>
+
+<header>
+  <canvas id="sky" aria-hidden="true"></canvas>
+  <div class="wrap hero">
+    <p class="kicker">AI Research Engineer · Oulu, Finland</p>
+    <h1>Usama Raheel</h1>
+    <p class="lede">
+      I build and evaluate <strong>retrieval-augmented LLM systems</strong>: hybrid retrieval
+      pipelines, LLM-as-judge evaluation, and the engineering that takes them from prototype
+      to delivery. MSc in Computer Science and Engineering (AI) from the University of Oulu,
+      2026, with four years in industry before it.
+    </p>
+    <p class="obs-line">
+      <span>answer quality <b>82.7%</b> · thesis RAG</span>
+      <span>MRR <b>0.96</b> · P@1 <b>0.93</b> · deployed</span>
+      <span>arXiv co-author · <b>cs.LG</b></span>
+    </p>
+    <div class="ctas">
+      <a class="btn" href="#work">View work</a>
+      <a class="btn ghost" href="#cv">Read the CV</a>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+  <section id="work">
+    <p class="sec-label">Selected work <span class="count">3 of 16</span></p>
+    <hr class="sec-rule">
+    <article class="work-row">
+      <div class="meta">MSC THESIS<br>Valamis Group / Univ. of Oulu<br>2025 - 2026</div>
+      <div>
+        <h3><a href="#">Context-Aware Insight Generation via RAG</a></h3>
+        <p>A RAG assistant that turns corporate learning data into business insights.
+           Hybrid retrieval (column mapping, intent detection, dense search) with two
+           LLM judges validated against human ratings.</p>
+        <p class="metrics">82.7% answer quality · +13.6 pts over baseline · MRR 0.96 · P@1 0.93</p>
+        <div class="links"><a href="#">Thesis, open access</a></div>
+      </div>
+    </article>
+    <article class="work-row">
+      <div class="meta">ARXIV PREPRINT<br>cs.LG · CC BY 4.0<br>2026</div>
+      <div>
+        <h3><a href="#">Railway Delays and Finnish Weather</a></h3>
+        <p>First publicly available dataset linking Finnish railway operations with
+           synchronized weather, 2018-2024: about 38.5 million observations across
+           5,915 km of rail and 209 weather stations.</p>
+        <p class="metrics">38.5M observations · XGBoost baseline · 2.73 min MAE</p>
+        <div class="links"><a href="#">arXiv</a><a href="#">Dataset</a></div>
+      </div>
+    </article>
+    <article class="work-row">
+      <div class="meta">UNIVERSITY OF OULU<br>NLP course project<br>2025</div>
+      <div>
+        <h3><a href="#">Recipe Retrieval at 500K Scale</a></h3>
+        <p>BM25, Sentence-BERT and hybrid retrieval with RAG over 500K+ recipes.
+           End-to-end pipeline: preprocessing, semantic indexing, structured
+           filtering, query expansion.</p>
+        <p class="metrics">NDCG@k 0.95 · MRR 1.0</p>
+        <div class="links"><a href="#">GitHub</a></div>
+      </div>
+    </article>
+  </section>
+
+  <section id="cv">
+    <p class="sec-label">Experience</p>
+    <hr class="sec-rule">
+    <div class="exp-row"><span class="years">2025 - 2026</span><span class="role">AI Research Engineer, Master's Thesis</span><span class="org">Valamis Group Oy</span></div>
+    <div class="exp-row"><span class="years">2025</span><span class="role">AI Research Intern</span><span class="org">Centre for Wireless Communications, University of Oulu</span></div>
+    <div class="exp-row"><span class="years">2023 - 2024</span><span class="role">Technical Project Manager</span><span class="org">ZeePalm</span></div>
+    <div class="exp-row"><span class="years">2022</span><span class="role">Software Developer</span><span class="org">GrocerApp</span></div>
+    <div class="exp-row"><span class="years">2021 - 2022</span><span class="role">Application Consultant</span><span class="org">Techlogix</span></div>
+    <div class="exp-row"><span class="years">2020 - 2021</span><span class="role">Teaching Assistant</span><span class="org">FAST-NUCES</span></div>
+  </section>
+
+  <section id="playground">
+    <p class="sec-label">Playground <span class="count">toys, not work</span></p>
+    <div class="toys">
+      <div class="toy">
+        <h4>Optimizer race</h4>
+        <p>Drop a marker on a loss surface and watch SGD, momentum and Adam find their way down.</p>
+        <span class="tag">In progress</span>
+      </div>
+      <div class="toy">
+        <h4>Digit sketchpad</h4>
+        <p>Draw a digit; a small network guesses it, running entirely in your browser.</p>
+        <span class="tag">In progress</span>
+      </div>
+      <div class="toy">
+        <h4>Night sky</h4>
+        <p>The stars behind this page. Move your cursor near them and constellations appear.</p>
+        <span class="tag">Live above</span>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="foot">
+      <div class="foot-links">
+        <a href="#">Email</a><a href="#">GitHub</a><a href="#">LinkedIn</a><a href="#">Thesis</a>
+      </div>
+      <label class="knob">brass
+        <input type="range" min="0" max="360" value="42" aria-label="Shift the site accent color">
+      </label>
+      <span class="copy">© 2026 Usama Raheel · Oulu, Finland · 65°N</span>
+    </div>
+  </footer>
+</div>
+
+<span class="variant-tag">mockup c3 · observatory</span>
+
+<script>
+  // accent knob
+  document.querySelector('.knob input').addEventListener('input', function (e) {
+    document.documentElement.style.setProperty('--accent-h', e.target.value);
+  });
+
+  // constellation sky
+  (function () {
+    var canvas = document.getElementById('sky');
+    var header = canvas.parentElement;
+    var ctx = canvas.getContext('2d');
+    var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var dpr = Math.min(window.devicePixelRatio || 1, 2);
+    var W, H, stars = [], mouse = { x: -9999, y: -9999 };
+    var visible = true;
+
+    function brass(alpha) {
+      var h = getComputedStyle(document.documentElement).getPropertyValue('--accent-h').trim() || 42;
+      return 'hsl(' + h + ' 52% 60% / ' + alpha + ')';
+    }
+    function resize() {
+      W = header.clientWidth; H = header.clientHeight;
+      canvas.width = W * dpr; canvas.height = H * dpr;
+      canvas.style.width = W + 'px'; canvas.style.height = H + 'px';
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+    function seed() {
+      stars = [];
+      var n = Math.min(150, Math.floor(W / 7));
+      for (var i = 0; i < n; i++) {
+        stars.push({
+          x: Math.random() * W, y: Math.random() * H,
+          r: Math.random() < 0.12 ? 1.6 : 0.9,
+          base: 0.25 + Math.random() * 0.45,
+          amp: 0.12 + Math.random() * 0.22,
+          phase: Math.random() * Math.PI * 2,
+          speed: 0.0006 + Math.random() * 0.0009,
+          gold: Math.random() < 0.14
+        });
+      }
+      // polaris: one named brass star, upper right
+      stars[0] = { x: W * 0.82, y: H * 0.18, r: 2.1, base: 0.85, amp: 0.1, phase: 0, speed: 0.0007, gold: true, name: 'polaris' };
+    }
+    function draw(t) {
+      if (!visible) return;
+      ctx.clearRect(0, 0, W, H);
+      // faint fixed constellation lines among neighbours
+      ctx.lineWidth = 0.6;
+      for (var i = 0; i < stars.length; i += 7) {
+        var a = stars[i], b = stars[(i + 3) % stars.length];
+        var dx = a.x - b.x, dy = a.y - b.y;
+        if (dx * dx + dy * dy < 36000) {
+          ctx.strokeStyle = 'rgba(143, 168, 216, 0.06)';
+          ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
+        }
+      }
+      // cursor constellations
+      var near = [];
+      for (var i = 0; i < stars.length; i++) {
+        var s = stars[i];
+        var dx = s.x - mouse.x, dy = s.y - mouse.y;
+        if (dx * dx + dy * dy < 13000) near.push(s);
+      }
+      ctx.lineWidth = 0.8;
+      for (var i = 0; i < near.length; i++) {
+        for (var j = i + 1; j < near.length; j++) {
+          var dx = near[i].x - near[j].x, dy = near[i].y - near[j].y;
+          if (dx * dx + dy * dy < 6400) {
+            ctx.strokeStyle = brass(0.35);
+            ctx.beginPath(); ctx.moveTo(near[i].x, near[i].y); ctx.lineTo(near[j].x, near[j].y); ctx.stroke();
+          }
+        }
+      }
+      // stars
+      for (var i = 0; i < stars.length; i++) {
+        var s = stars[i];
+        var alpha = reduced ? s.base : Math.max(0.08, s.base + Math.sin(t * s.speed + s.phase) * s.amp);
+        ctx.fillStyle = s.gold ? brass(alpha) : 'rgba(210, 222, 244, ' + alpha + ')';
+        ctx.beginPath(); ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2); ctx.fill();
+        if (s.name) {
+          ctx.fillStyle = 'rgba(95, 104, 128, 0.85)';
+          ctx.font = '10px Consolas, monospace';
+          ctx.fillText(s.name + ' · 65°N', s.x + 10, s.y + 3);
+        }
+      }
+      if (!reduced) requestAnimationFrame(draw);
+    }
+    resize(); seed();
+    header.addEventListener('mousemove', function (e) {
+      var r = header.getBoundingClientRect();
+      mouse.x = e.clientX - r.left; mouse.y = e.clientY - r.top;
+      if (reduced) draw(0);
+    });
+    header.addEventListener('mouseleave', function () { mouse.x = -9999; mouse.y = -9999; if (reduced) draw(0); });
+    window.addEventListener('resize', function () { resize(); seed(); if (reduced) draw(0); });
+    document.addEventListener('visibilitychange', function () {
+      visible = !document.hidden;
+      if (visible && !reduced) requestAnimationFrame(draw);
+    });
+    if (reduced) { draw(0); } else { requestAnimationFrame(draw); }
+  })();
+</script>

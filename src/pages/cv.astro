@@ -1,0 +1,300 @@
+---
+import Base from '../layouts/Base.astro';
+import Sky from '../components/Sky.astro';
+import { site } from '../data/site';
+import {
+  cvSummary,
+  cvEducation,
+  cvRoles,
+  cvSkills,
+  cvSoftSkills,
+  cvLanguages,
+  cvCertifications,
+  cvHonors,
+  cvVolunteering,
+  cvPublication,
+} from '../data/cv';
+---
+
+<Base
+  title="CV · Usama Raheel"
+  description="The full CV of Usama Raheel: education, six roles, skills, languages, certifications, honors, volunteering and one publication. Printable."
+>
+  <div class="head-zone">
+    <Sky density={12} fade="bottom" />
+    <header class="wrap cv-head">
+      <div class="row">
+        <p class="sec-label">Curriculum vitae<span class="count">plate 00 · reference</span></p>
+        <button class="btn ghost no-print" id="print-btn" type="button">Print / save PDF</button>
+      </div>
+      <hr class="sec-rule" />
+      <h1>{site.name}</h1>
+      <p class="sub">{site.title} · {site.location}</p>
+      <p class="contact">
+        <a href="mailto:usamarq10fi@gmail.com">usamarq10fi@gmail.com</a>
+        <span>·</span>
+        <a href="https://www.github.com/usamarq" target="_blank" rel="noopener">github.com/usamarq</a>
+        <span>·</span>
+        <a href="https://www.linkedin.com/in/usamarq/" target="_blank" rel="noopener">linkedin.com/in/usamarq</a>
+      </p>
+    </header>
+  </div>
+
+  <div class="wrap cv">
+    <section class="summary">
+      <p class="sec-label">Summary</p>
+      <hr class="sec-rule" />
+      <p class="text">{cvSummary}</p>
+    </section>
+
+    <div class="cv-flow">
+      <div class="col-main">
+    <section class="s-exp">
+      <p class="sec-label">Experience</p>
+      <hr class="sec-rule" />
+      {cvRoles.map((r) => (
+        <div class="entry">
+          <div class="when">{r.dates}</div>
+          <div class="what">
+            <h2>{r.role}</h2>
+            <p class="org">{r.org}</p>
+            <ul>
+              {r.bullets.map((b) => (
+                <li>{b}</li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      ))}
+    </section>
+    <section class="s-edu">
+      <p class="sec-label">Education</p>
+      <hr class="sec-rule" />
+      {cvEducation.map((e) => (
+        <div class="entry">
+          <div class="when">{e.dates}</div>
+          <div class="what">
+            <h2>{e.degree}</h2>
+            <p class="org">{e.school}</p>
+            <ul>
+              {e.notes.map((n) => (
+                <li>{n}</li>
+              ))}
+            </ul>
+            {e.link && (
+              <p class="ref">
+                <a href={e.link.href} target="_blank" rel="noopener">{e.link.label} ↗</a>
+              </p>
+            )}
+          </div>
+        </div>
+      ))}
+    </section>
+    <section class="s-pub">
+      <p class="sec-label">Publication</p>
+      <hr class="sec-rule" />
+      <div class="entry">
+        <div class="when">{cvPublication.date}</div>
+        <div class="what">
+          <h2><a href={cvPublication.href} target="_blank" rel="noopener">{cvPublication.title}</a></h2>
+          <p class="org">{cvPublication.venue}</p>
+          <ul>
+            {cvPublication.bullets.map((b) => (
+              <li>{b}</li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    </section>
+    <section class="s-honors">
+      <p class="sec-label">Honors and awards</p>
+      <hr class="sec-rule" />
+      {cvHonors.map((h) => (
+        <div class="entry">
+          <div class="when">{h.date}</div>
+          <div class="what">
+            <h2>{h.title}</h2>
+            <p class="org">{h.org}</p>
+          </div>
+        </div>
+      ))}
+    </section>
+    <section class="s-vol">
+      <p class="sec-label">Volunteering</p>
+      <hr class="sec-rule" />
+      {cvVolunteering.map((v) => (
+        <div class="entry">
+          <div class="when">{v.date}</div>
+          <div class="what">
+            <h2>{v.title}</h2>
+            <p class="org">{v.org}</p>
+          </div>
+        </div>
+      ))}
+    </section>
+      </div>
+      <aside class="col-rail">
+    <section class="s-skills">
+      <p class="sec-label">Skills</p>
+      <hr class="sec-rule" />
+      {cvSkills.map((s) => (
+        <div class="entry">
+          <div class="when">{s.title}</div>
+          <div class="what"><p class="plain">{s.items}</p></div>
+        </div>
+      ))}
+      <div class="entry">
+        <div class="when">Soft skills</div>
+        <div class="what"><p class="plain">{cvSoftSkills.join(' · ')}</p></div>
+      </div>
+    </section>
+    <section class="s-lang">
+      <p class="sec-label">Languages</p>
+      <hr class="sec-rule" />
+      {cvLanguages.map((l) => (
+        <div class="entry">
+          <div class="when">{l.lang}</div>
+          <div class="what"><p class="plain">{l.level}</p></div>
+        </div>
+      ))}
+    </section>
+    <section class="s-cert">
+      <p class="sec-label">Certifications</p>
+      <hr class="sec-rule" />
+      {cvCertifications.map((c) => (
+        <div class="entry">
+          <div class="when">{c.date}</div>
+          <div class="what">
+            <h2>
+              {c.href ? <a href={c.href} target="_blank" rel="noopener">{c.title} ↗</a> : c.title}
+            </h2>
+            <p class="org">{c.org}{c.note && ` · ${c.note}`}</p>
+          </div>
+        </div>
+      ))}
+    </section>
+      </aside>
+    </div>
+
+    <p class="print-note no-print"><i>✦</i> Ctrl+P, or the button above, produces a clean printed copy.</p>
+  </div>
+</Base>
+
+<style>
+  .head-zone { position: relative; overflow: hidden; }
+  .cv, .cv-head { max-width: 900px; }
+  .cv-head { position: relative; z-index: 1; padding-top: 56px; padding-bottom: 26px; }
+  .cv-head .row { display: flex; justify-content: space-between; align-items: baseline; gap: 20px; flex-wrap: wrap; }
+  .cv-head h1 {
+    font-family: var(--ff-serif);
+    font-size: clamp(38px, 6vw, 54px);
+    font-weight: 500;
+    letter-spacing: 0.005em;
+    margin-top: 18px;
+  }
+  .sub { color: var(--muted); margin-top: 6px; font-size: 16px; }
+  .contact { margin-top: 14px; display: flex; flex-wrap: wrap; gap: 10px; font-family: var(--ff-mono); font-size: 13px; }
+  .contact a { color: var(--muted); border-bottom: 1px solid var(--hairline); padding-bottom: 1px; }
+  .contact a:hover { color: var(--brass); border-color: var(--brass-line); }
+  .contact span { color: var(--faint); }
+
+  section { padding-top: 48px; }
+  .summary .text { color: var(--muted); font-size: 15.5px; line-height: 1.75; max-width: 78ch; margin-top: 12px; }
+
+  /* single column: wrappers dissolve and CSS order restores the classic
+     reading order (experience, education, skills, publication, languages,
+     certifications, honors, volunteering) */
+  .cv-flow { display: flex; flex-direction: column; }
+  .col-main, .col-rail { display: contents; }
+  .s-exp { order: 1; }
+  .s-edu { order: 2; }
+  .s-skills { order: 3; }
+  .s-pub { order: 4; }
+  .s-lang { order: 5; }
+  .s-cert { order: 6; }
+  .s-honors { order: 7; }
+  .s-vol { order: 8; }
+
+  /* wide desktops: skills, languages and certifications become a right
+     rail beside experience, like the printed CV */
+  @media (min-width: 1440px) {
+    .cv, .cv-head { max-width: 1240px; }
+    .cv-flow {
+      display: grid;
+      grid-template-columns: 1fr 330px;
+      column-gap: 72px;
+      align-items: start;
+    }
+    .col-main, .col-rail { display: block; }
+    .col-rail .entry { grid-template-columns: 1fr; gap: 3px; }
+    .col-rail .when { padding-top: 0; }
+  }
+
+  @media (min-width: 1600px) {
+    .summary .text { font-size: 16.5px; }
+    .what h2 { font-size: 16.5px; }
+    .what ul { font-size: 15.5px; }
+    .plain { font-size: 15.5px; }
+  }
+
+  .entry {
+    display: grid;
+    grid-template-columns: 170px 1fr;
+    gap: 18px;
+    padding: 16px 2px;
+    border-bottom: 1px solid var(--hairline);
+  }
+  .entry:last-of-type { border-bottom: 0; }
+  .when {
+    font-family: var(--ff-mono);
+    font-size: 12.5px;
+    color: var(--faint);
+    font-variant-numeric: tabular-nums;
+    padding-top: 3px;
+  }
+  .what h2 { font-size: 15.5px; font-weight: 600; }
+  .what h2 a:hover { color: var(--brass); }
+  .what .org { color: var(--muted); font-size: 14px; margin-top: 2px; }
+  .what ul { list-style: disc outside; margin: 10px 0 0 18px; color: var(--muted); font-size: 14.5px; }
+  .what li { margin-bottom: 6px; }
+  .what li::marker { color: var(--brass); }
+  .what .ref { margin-top: 10px; font-size: 13.5px; }
+  .what .ref a { color: var(--muted); border-bottom: 1px solid var(--hairline); padding-bottom: 1px; }
+  .what .ref a:hover { color: var(--brass); border-color: var(--brass-line); }
+  .plain { color: var(--muted); font-size: 14.5px; padding-top: 2px; }
+
+  .print-note { margin-top: 56px; color: var(--faint); font-size: 13.5px; }
+  .print-note i { color: var(--brass); font-style: normal; margin-right: 8px; }
+
+  @media (max-width: 760px) {
+    .cv-head { padding-top: 36px; }
+    section { padding-top: 38px; }
+    .entry { grid-template-columns: 1fr; gap: 4px; padding: 14px 0; }
+    .when { padding-top: 0; }
+  }
+
+  @media print {
+    .cv, .cv-head { max-width: 100%; padding-top: 0; }
+    /* the printed copy keeps the classic single-column order, whatever
+       the window width was when printing started */
+    .cv-flow { display: flex; flex-direction: column; }
+    .col-main, .col-rail { display: contents; }
+    .cv-head h1 { font-size: 28px; margin-top: 8px; }
+    .sub { font-size: 13px; margin-top: 2px; }
+    .contact { margin-top: 8px; font-size: 11px; gap: 8px; }
+    section { padding-top: 18px; }
+    .summary .text { font-size: 11.5px; max-width: none; }
+    .entry { grid-template-columns: 110px 1fr; gap: 12px; padding: 7px 0; break-inside: avoid; }
+    .when { font-size: 10px; padding-top: 2px; }
+    .what h2 { font-size: 12px; }
+    .what .org { font-size: 11px; }
+    .what ul { font-size: 10.5px; margin-top: 4px; }
+    .what li { margin-bottom: 3px; }
+    .plain { font-size: 11px; }
+    .what .ref { font-size: 10.5px; }
+  }
+</style>
+
+<script>
+  document.getElementById('print-btn')?.addEventListener('click', () => window.print());
+</script>

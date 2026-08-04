@@ -1,0 +1,12 @@
+node_modules/
+dist/
+.astro/
+.vercel/
+*.log
+.playwright-mcp/
+.env
+.env.*
+
+# working documents, never published
+PLAN.md
+CONTENT_INVENTORY.md
