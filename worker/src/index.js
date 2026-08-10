@@ -6,8 +6,10 @@
    cached, so the assistant always answers from what the site publishes. */
 
 const SITE = 'https://usamarq.site';
-// www redirects to the apex and the old vercel.app alias still serves, so
-// both stay on the list — a visitor on either must not hit a CORS wall.
+// www and the old vercel.app alias both 308 to the apex, so neither should
+// ever appear as an Origin — they stay on the list only as a cheap guard
+// against a redirect being dropped, since anything missing here gets 403
+// and the Ask panel just says "something went wrong".
 const ALLOWED_ORIGINS = new Set([
   SITE,
   'https://www.usamarq.site',
