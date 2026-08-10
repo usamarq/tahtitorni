@@ -5,8 +5,15 @@
    through. The knowledge document is fetched from the site itself and
    cached, so the assistant always answers from what the site publishes. */
 
-const SITE = 'https://usamaraheel.vercel.app';
-const ALLOWED_ORIGINS = new Set([SITE, 'http://localhost:4321']);
+const SITE = 'https://usamarq.site';
+// www redirects to the apex and the old vercel.app alias still serves, so
+// both stay on the list — a visitor on either must not hit a CORS wall.
+const ALLOWED_ORIGINS = new Set([
+  SITE,
+  'https://www.usamarq.site',
+  'https://usamaraheel.vercel.app',
+  'http://localhost:4321',
+]);
 const MAX_QUESTION = 300;
 const MAX_TURNS = 10;
 const MAX_TURN_CHARS = 4000;

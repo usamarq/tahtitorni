@@ -1,4 +1,4 @@
-# tähtitorni ✦ usamaraheel.vercel.app
+# tähtitorni ✦ usamarq.site
 
 *Tähtitorni*, Finnish for observatory: the star tower. The personal site of
 Usama Raheel, AI Research Engineer in Oulu, Finland (65°N), built as a

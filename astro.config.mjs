@@ -4,7 +4,7 @@ import sitemap from '@astrojs/sitemap';
 import tailwindcss from '@tailwindcss/vite';
 
 export default defineConfig({
-  site: 'https://usamaraheel.vercel.app',
+  site: 'https://usamarq.site',
   build: { inlineStylesheets: 'always' },
   integrations: [mdx(), sitemap({ filter: (page) => !page.includes('/404') })],
   vite: {

@@ -35,7 +35,7 @@ const home = `<svg width="1200" height="630" xmlns="http://www.w3.org/2000/svg">
   <text x="96" y="375" font-family="Segoe UI, sans-serif" font-size="29" fill="#98a0b4">Machine learning systems, built and evaluated · Oulu, Finland</text>
   <line x1="96" y1="440" x2="1104" y2="440" stroke="#212a44" stroke-width="2"/>
   <text x="96" y="492" font-family="Consolas, monospace" font-size="25" fill="#c9a654">82.7% answer quality · MRR 0.96 · arXiv cs.LG co-author</text>
-  <text x="96" y="566" font-family="Consolas, monospace" font-size="21" fill="#5f6880">usamaraheel.vercel.app</text>
+  <text x="96" y="566" font-family="Consolas, monospace" font-size="21" fill="#5f6880">usamarq.site</text>
 </svg>`;
 
 /* ----------------------------------------------------- og-playground.png */
@@ -133,7 +133,7 @@ const playground = `<svg width="1200" height="630" xmlns="http://www.w3.org/2000
   ${panelFrame(1, '02 DIGITS')}${digitArt}
   ${panelFrame(2, '03 CIRCLE')}${circleArt}
   ${panelFrame(3, '04 FLOW')}${flowArt}
-  <text x="96" y="576" font-family="Consolas, monospace" font-size="21" fill="#5f6880">usamaraheel.vercel.app/playground · no servers, just canvas</text>
+  <text x="96" y="576" font-family="Consolas, monospace" font-size="21" fill="#5f6880">usamarq.site/playground · no servers, just canvas</text>
 </svg>`;
 
 await sharp(Buffer.from(home)).png().toFile('public/og.png');
