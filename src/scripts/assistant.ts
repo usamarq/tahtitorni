@@ -137,13 +137,14 @@ export function close() {
 }
 
 /* ---------- the conversation ---------- */
-function failureText(status?: number) {
+function failureText(status?: number, reason = '') {
   const email = ' You can always email <a href="mailto:usamarq10fi@gmail.com">usamarq10fi@gmail.com</a>.';
-  if (status === 429)
-    return 'The assistant is either getting many questions right now or has used its free stargazing quota for today. Try again in a minute —' + email;
-  if (status === 403 || status === 503)
-    return 'The assistant cannot take questions from here.' + email;
-  return 'Something went wrong between here and the model. Try once more —' + email;
+  if (status === 429 || reason === 'RESOURCE_EXHAUSTED')
+    return 'The assistant is either getting many questions right now or has used its free stargazing quota for today. Try again in a minute.' + email;
+  if (reason === 'UNAVAILABLE' || reason === 'TIMEOUT' || status === 503 || status === 504)
+    return 'The model behind the assistant is overloaded or slow right now. Try again in a minute.' + email;
+  if (status === 403) return 'The assistant cannot take questions from here.' + email;
+  return 'Something went wrong between here and the model. Try once more.' + email;
 }
 
 async function ask(question: string) {
@@ -170,7 +171,13 @@ async function ask(question: string) {
       body: JSON.stringify({ question, history: history.slice(-10) }),
     });
     if (!res.ok || !res.body) {
-      pending.innerHTML = failureText(res.status);
+      let reason = '';
+      try {
+        reason = String((await res.json())?.reason ?? '');
+      } catch {
+        /* no json body */
+      }
+      pending.innerHTML = failureText(res.status, reason);
       return;
     }
 

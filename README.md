@@ -54,9 +54,14 @@ npx wrangler deploy --config worker/wrangler.toml          # deploy changes
 npx wrangler secret put GEMINI_API_KEY --config worker/wrangler.toml  # rotate key
 ```
 
-The model is the rolling `gemini-flash-latest` alias (set in
-`worker/wrangler.toml`), so retired model names can't break it. The site
-reads the relay URL from a constant in `src/scripts/assistant.ts`
+The models are a fallback chain of rolling aliases set in
+`worker/wrangler.toml` (lite first since September 2026, when the flash
+alias was overloaded or hanging on every request), so retired model names
+can't break it; the worker steps down the chain on quota, 404, 5xx or a
+25-second hang and logs each failure for
+`npx wrangler tail tahtitorni-ask --config worker/wrangler.toml`. The
+Cloudflare account is the GitHub-connected login, not the Gmail one. The
+site reads the relay URL from a constant in `src/scripts/assistant.ts`
 (override with `PUBLIC_ASK_ENDPOINT` at build time). Wrangler is pinned
 to 4.85.0, the last release that runs on Node 20.
 

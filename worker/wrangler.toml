@@ -5,11 +5,14 @@ name = "tahtitorni-ask"
 main = "src/index.js"
 compatibility_date = "2026-08-01"
 
-# Fallback chain, best model first: rolling aliases so retired names can't
-# break the assistant; free-tier daily quotas are per model, so when one
-# runs dry the worker steps down to the next.
+# Fallback chain of rolling aliases, so retired names can't break the
+# assistant; free-tier daily quotas are per model, so when one runs dry,
+# hangs or is overloaded the worker steps down to the next. Lite goes
+# first since 2026-09-02: the flash alias was answering 503 "high demand"
+# or hanging past 25s on every request, and lite handles grounded Q&A
+# well. Swap the order back once flash is dependable again.
 [vars]
-MODELS = "gemini-flash-latest,gemini-flash-lite-latest"
+MODELS = "gemini-flash-lite-latest,gemini-flash-latest"
 
 # Per-IP rate limit: 8 requests per minute
 [[unsafe.bindings]]

@@ -19,6 +19,12 @@ const ALLOWED_ORIGINS = new Set([
 const MAX_QUESTION = 300;
 const MAX_TURNS = 10;
 const MAX_TURN_CHARS = 4000;
+const CALL_TIMEOUT = 25000; // ms to wait for a model to start answering
+const KNOWLEDGE_TIMEOUT = 10000;
+/* statuses that send the request on to the next model in the chain: quota
+   (429), retired name (404), overloaded or broken (5xx), and our own
+   synthesized 504 for a call that never started answering */
+const FALL_THROUGH = new Set([404, 429, 500, 502, 503, 504]);
 
 const PERSONA = `You are the site assistant on Usama Raheel's personal website (an "observatory" themed portfolio). You answer visitors' questions about Usama and help them find their way around the site.
 
@@ -49,6 +55,7 @@ function json(status, body, cors) {
 async function knowledge() {
   const res = await fetch(`${SITE}/assistant-knowledge.txt`, {
     cf: { cacheTtl: 3600, cacheEverything: true },
+    signal: AbortSignal.timeout(KNOWLEDGE_TIMEOUT),
   });
   if (!res.ok) throw new Error(`knowledge fetch ${res.status}`);
   return res.text();
@@ -97,37 +104,69 @@ export default {
     }
 
     /* Free-tier quotas are per model (gemini-3.6-flash allows only 20
-       requests/day), so we chain models: when one runs dry (429) or
-       vanishes (404), fall through to the next. Minimal thinking because
-       grounded Q&A needs no deliberation and thinking tokens otherwise
-       eat the output budget; if a model rejects the thinking parameter
-       (400), retry it once without. */
+       requests/day), so we chain models: when one runs dry (429),
+       vanishes (404), is overloaded (5xx) or never starts answering
+       within CALL_TIMEOUT, fall through to the next. Minimal thinking
+       because grounded Q&A needs no deliberation and thinking tokens
+       otherwise eat the output budget; if a model rejects the thinking
+       parameter (400), retry it once without. */
     const models = (env.MODELS || 'gemini-flash-latest,gemini-flash-lite-latest').split(',');
-    const call = (model, thinking) =>
-      fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model.trim()}:streamGenerateContent?alt=sse`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'x-goog-api-key': env.GEMINI_API_KEY },
-        body: JSON.stringify({
-          system_instruction: { parts: [{ text: `${PERSONA}\n\n--- KNOWLEDGE DOCUMENT ---\n${doc}` }] },
-          contents,
-          generationConfig: {
-            maxOutputTokens: 2048,
-            temperature: 0.3,
-            ...(thinking ? { thinkingConfig: { thinkingLevel: 'minimal' } } : {}),
-          },
-        }),
-      });
+    const call = async (model, thinking) => {
+      /* the timer only guards the wait for headers: it is cleared as soon
+         as the model starts streaming, so a long answer is never cut off */
+      const ctrl = new AbortController();
+      const timer = setTimeout(() => ctrl.abort(), CALL_TIMEOUT);
+      try {
+        return await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model.trim()}:streamGenerateContent?alt=sse`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'x-goog-api-key': env.GEMINI_API_KEY },
+          signal: ctrl.signal,
+          body: JSON.stringify({
+            system_instruction: { parts: [{ text: `${PERSONA}\n\n--- KNOWLEDGE DOCUMENT ---\n${doc}` }] },
+            contents,
+            generationConfig: {
+              maxOutputTokens: 2048,
+              temperature: 0.3,
+              ...(thinking ? { thinkingConfig: { thinkingLevel: 'minimal' } } : {}),
+            },
+          }),
+        });
+      } catch (err) {
+        const status = ctrl.signal.aborted ? 'TIMEOUT' : 'FETCH_FAILED';
+        return new Response(JSON.stringify({ error: { status, message: String((err && err.message) || err) } }), {
+          status: 504,
+          headers: { 'Content-Type': 'application/json' },
+        });
+      } finally {
+        clearTimeout(timer);
+      }
+    };
+    /* Google's error status enum (UNAVAILABLE, RESOURCE_EXHAUSTED, ...) is
+       safe to pass to the panel; the message is only logged, for
+       `wrangler tail` */
+    const failure = async (res) => {
+      try {
+        const e = (await res.clone().json())?.error || {};
+        return { reason: e.status || '', message: String(e.message || '').slice(0, 200) };
+      } catch {
+        return { reason: '', message: '' };
+      }
+    };
     let upstream = null;
+    let reason = '';
     for (const model of models) {
       upstream = await call(model, true);
       if (upstream.status === 400) upstream = await call(model, false);
       if (upstream.ok) break;
-      if (upstream.status !== 429 && upstream.status !== 404) break;
+      const f = await failure(upstream);
+      reason = f.reason;
+      console.log(`upstream ${model.trim()} -> ${upstream.status} ${f.reason} ${f.message}`.trim());
+      if (!FALL_THROUGH.has(upstream.status)) break;
     }
 
     if (!upstream.ok || !upstream.body) {
-      /* pass the status through (429 quota, etc.) without leaking details */
-      return json(upstream.status, { error: 'upstream' }, cors);
+      /* pass the status and Google's status enum through, nothing else */
+      return json(upstream.status, { error: 'upstream', reason }, cors);
     }
     return new Response(upstream.body, {
       status: 200,
