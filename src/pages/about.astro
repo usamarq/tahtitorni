@@ -5,12 +5,12 @@ import Portrait from '../components/Portrait.astro';
 import { socials } from '../data/site';
 import { cvInterests } from '../data/cv';
 
-const elsewhere = socials.filter((s) => ['GitHub', 'LinkedIn', 'Instagram', 'Twitter'].includes(s.label));
+const elsewhere = socials.filter((s) => ['GitHub', 'LinkedIn', 'ORCID', 'Instagram', 'Twitter'].includes(s.label));
 ---
 
 <Base
   title="About · Usama Raheel"
-  description="Four years in industry, then an MSc in AI at the University of Oulu. Retrieval-augmented LLM systems, careful evaluation, and life at 65°N."
+  description="Over two years in industry, then an MSc in AI at the University of Oulu. Retrieval-augmented LLM systems, careful evaluation, and life at 65°N."
 >
   <PageHeader sky label="About" title="The longer <em>story</em>" />
 
@@ -18,9 +18,10 @@ const elsewhere = socials.filter((s) => ['GitHub', 'LinkedIn', 'Instagram', 'Twi
     <div class="story">
       <p>
         I came to machine learning through industry rather than straight through school. After a
-        BSc in Electrical Engineering at FAST-NUCES, four years of building: application
-        consulting at Techlogix, where I contributed to a digital lending platform for banks
-        across Pakistan; software development at GrocerApp; and technical project management at
+        BSc in Electrical Engineering at FAST-NUCES, a little over two years of building:
+        application consulting at Techlogix, where I contributed to a digital lending platform
+        for banks across Pakistan and built the machine learning models behind its credit
+        assessment; software development at GrocerApp; and technical project management at
         ZeePalm, running project lifecycles and giving technical direction on machine learning
         and web work.
       </p>
@@ -28,7 +29,9 @@ const elsewhere = socials.filter((s) => ['GitHub', 'LinkedIn', 'Instagram', 'Twi
         In 2024 I moved to Oulu, Finland, for the MSc in Computer Science and Engineering at the
         University of Oulu, on the Artificial Intelligence track: machine vision, deep learning,
         NLP, LLMs. It finished in July 2026 with a thesis at Valamis, building and evaluating a
-        retrieval-augmented LLM assistant for their corporate learning platform. The thesis is
+        retrieval-augmented LLM assistant for their corporate learning platform, supported by a
+        20,000 EUR Master's Thesis Grant in AI from the Technology Industries of Finland
+        Centennial Foundation. The thesis is
         <a href="https://oulurepo.oulu.fi/handle/10024/63278" target="_blank" rel="noopener">open access</a>.
       </p>
       <p>
@@ -62,7 +65,7 @@ const elsewhere = socials.filter((s) => ['GitHub', 'LinkedIn', 'Instagram', 'Twi
         </div>
         <div>
           <dt>Languages</dt>
-          <dd>English C2 · Finnish A2.1 · Urdu native</dd>
+          <dd>English C1, IELTS 8.0 · Finnish A2.1 · Urdu native</dd>
         </div>
         <div>
           <dt>Open to</dt>

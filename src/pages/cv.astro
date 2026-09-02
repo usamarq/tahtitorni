@@ -13,12 +13,13 @@ import {
   cvHonors,
   cvVolunteering,
   cvPublication,
+  cvGrants,
 } from '../data/cv';
 ---
 
 <Base
   title="CV · Usama Raheel"
-  description="The full CV of Usama Raheel: education, six roles, skills, languages, certifications, honors, volunteering and one publication. Printable."
+  description="The full CV of Usama Raheel: education, six roles, skills, languages, certifications, a thesis grant, honors, volunteering and one publication. Printable."
 >
   <div class="head-zone">
     <Sky density={12} fade="bottom" />
@@ -36,6 +37,8 @@ import {
         <a href="https://www.github.com/usamarq" target="_blank" rel="noopener">github.com/usamarq</a>
         <span>·</span>
         <a href="https://www.linkedin.com/in/usamarq/" target="_blank" rel="noopener">linkedin.com/in/usamarq</a>
+        <span>·</span>
+        <a href="https://orcid.org/0009-0001-3964-9072" target="_blank" rel="noopener">orcid.org/0009-0001-3964-9072</a>
       </p>
     </header>
   </div>
@@ -105,6 +108,24 @@ import {
           </ul>
         </div>
       </div>
+    </section>
+    <section class="s-grant">
+      <p class="sec-label">Grants and funding</p>
+      <hr class="sec-rule" />
+      {cvGrants.map((g) => (
+        <div class="entry">
+          <div class="when">{g.date}</div>
+          <div class="what">
+            <h2>{g.title}</h2>
+            <p class="org">{g.org}</p>
+            <ul>
+              {g.bullets.map((b) => (
+                <li>{b}</li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      ))}
     </section>
     <section class="s-honors">
       <p class="sec-label">Honors and awards</p>
@@ -202,18 +223,19 @@ import {
   .summary .text { color: var(--muted); font-size: 15.5px; line-height: 1.75; max-width: 78ch; margin-top: 12px; }
 
   /* single column: wrappers dissolve and CSS order restores the classic
-     reading order (experience, education, skills, publication, languages,
-     certifications, honors, volunteering) */
+     reading order (experience, education, skills, publication, grants,
+     languages, certifications, honors, volunteering) */
   .cv-flow { display: flex; flex-direction: column; }
   .col-main, .col-rail { display: contents; }
   .s-exp { order: 1; }
   .s-edu { order: 2; }
   .s-skills { order: 3; }
   .s-pub { order: 4; }
-  .s-lang { order: 5; }
-  .s-cert { order: 6; }
-  .s-honors { order: 7; }
-  .s-vol { order: 8; }
+  .s-grant { order: 5; }
+  .s-lang { order: 6; }
+  .s-cert { order: 7; }
+  .s-honors { order: 8; }
+  .s-vol { order: 9; }
 
   /* wide desktops: skills, languages and certifications become a right
      rail beside experience, like the printed CV */

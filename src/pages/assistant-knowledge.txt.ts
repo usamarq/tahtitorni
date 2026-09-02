@@ -17,6 +17,7 @@ import {
   cvHonors,
   cvVolunteering,
   cvPublication,
+  cvGrants,
   cvInterests,
   toys,
 } from '../data/cv';
@@ -64,6 +65,12 @@ export const GET: APIRoute = async () => {
   push(`${cvPublication.title} — ${cvPublication.venue} (${cvPublication.date})`);
   for (const b of cvPublication.bullets) push(`- ${b}`);
   push(`Link: ${cvPublication.href}`);
+  push('');
+  push('## Grants and funding');
+  for (const g of cvGrants) {
+    push(`### ${g.title} — ${g.org} (${g.date})`);
+    for (const b of g.bullets) push(`- ${b}`);
+  }
   push('');
   push('## Certifications');
   for (const c of cvCertifications) push(`- ${c.title} — ${c.org} (${c.date})${c.note ? ` · ${c.note}` : ''}`);

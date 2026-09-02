@@ -13,7 +13,7 @@ export const experience = [
 export const heroMetrics = [
   { value: '82.7%', label: 'answer quality · thesis RAG' },
   { value: '38.5M', label: 'observations · arXiv dataset' },
-  { value: '4 yrs', label: 'industry before the MSc' },
+  { value: '2+ yrs', label: 'industry before the MSc' },
 ];
 
 /* The breadth strip: what he works on overall, from the master CV skills
@@ -61,8 +61,8 @@ export const selectedWork = [
   {
     meta: ['DEEP LEARNING COURSE', 'University of Oulu', '2024'],
     title: 'Reading Retinas with Deep Learning',
-    desc: 'A deep learning model for detecting diabetic retinopathy from retinal images, comparing neural network architectures and optimization techniques: computer vision applied to healthcare diagnostics.',
-    metrics: 'Grad-CAM · attention mechanisms · ensembles',
+    desc: 'A deep learning model for detecting diabetic retinopathy from retinal images: transfer learning on pretrained ResNet and VGG, compared on the task, alongside architecture and optimization experiments with Grad-CAM, attention mechanisms and ensembles. Computer vision applied to healthcare diagnostics.',
+    metrics: 'ResNet · VGG · transfer learning · Grad-CAM',
     links: [{ label: 'GitHub', href: 'https://github.com/usamarq/deep_learning_approach_to_detect_diabetic_retinopathy' }],
   },
 ];
@@ -103,7 +103,7 @@ export const toys = [
 /* Phone and street address are never published.                       */
 
 export const cvSummary =
-  "AI Research Engineer with an M.Sc. in Computer Science & Engineering (AI specialization) from the University of Oulu, completed July 2026, and four years of prior industry experience across software development, application consulting, and technical project management. Hands-on in designing and evaluating machine-learning and AI systems in Python and PyTorch, spanning deep learning, NLP and retrieval-augmented generation, machine vision, and data analytics; built and delivered a retrieval-augmented LLM assistant for Valamis's corporate-learning platform as a Master's thesis. Combines this with project-management experience leading cross-functional teams and translating business requirements into technical solutions. Seeking roles in AI/ML engineering, data science, or research.";
+  "AI Research Engineer with an M.Sc. in Computer Science & Engineering (AI specialization) from the University of Oulu, completed July 2026, and over two years of prior industry experience across software development, application consulting, and technical project management. Hands-on in designing and evaluating machine-learning and AI systems in Python and PyTorch, spanning deep learning, NLP and retrieval-augmented generation, machine vision, and data analytics; built and delivered a retrieval-augmented LLM assistant for Valamis's corporate-learning platform as a Master's thesis. Combines this with project-management experience leading cross-functional teams and translating business requirements into technical solutions. Seeking roles in AI/ML engineering, data science, or research.";
 
 export const cvEducation = [
   {
@@ -114,7 +114,8 @@ export const cvEducation = [
       'Artificial Intelligence specialization track, with a focus on machine vision, deep learning, natural language processing, and LLMs.',
       'Grade: average 4.58 on a 0 to 5 scale, 125 credits completed of 120 required. Thesis assessment: 5.',
       'Thesis: Enhancing Context-Aware Insight Generation in Corporate Learning Platforms via Retrieval-Augmented Language Models.',
-      'Relevant coursework: Affective Computing, Machine Vision, Deep Learning, Multi-Modal Data Fusion, Biosignal Processing I, NLP & Text Mining, Introduction to Optimization.',
+      'Relevant coursework: Affective Computing, Machine Vision, Deep Learning, Multi-Modal Data Fusion, Biosignal Processing I, NLP & Text Mining, Introduction to Optimization, International Crisis Management (CriM).',
+      'International Crisis Management (CriM), 5 credits, December 2025: lectures and workshops on the current cybersecurity threat landscape and the development objectives around it, with content set by current threat levels and by different classes of cyberattack, delivered by international practitioners in their fields.',
     ],
     link: { label: 'Thesis, open access', href: 'https://oulurepo.oulu.fi/handle/10024/63278' },
   },
@@ -176,6 +177,9 @@ export const cvRoles = [
     dates: 'Aug 2021 - Apr 2022',
     bullets: [
       'Contributed to the design and deployment of a Digital Lending Platform for leading banks across Pakistan.',
+      'Developed, tested, and deployed digital lending solutions for multiple banks, working inside conventional core banking systems including Oracle FlexCube and Temenos T24.',
+      'The platform let salaried customers draw instant loans and repay them after their salary was paid. Built the data analysis and the machine learning models behind its credit assessment: predicting whether an applicant would repay on time, and what loan amount could be extended to them.',
+      'The system shortened the loan approval process, which conventionally requires extensive paperwork and manual approvals in Pakistan.',
       'Developed customized MIS reports using SQL to meet diverse business requirements.',
       'Acted as a bridge between development and product teams by analyzing business requirements and ensuring accurate technical implementation.',
     ],
@@ -194,7 +198,11 @@ export const cvRoles = [
 
 export const cvSkills = [
   { title: 'Programming & Scripting', items: 'Python, SQL, R, C, C++' },
-  { title: 'Frameworks & Libraries', items: 'PyTorch, TensorFlow, Scikit-learn, Spark, OpenCV, scikit-image' },
+  {
+    title: 'Frameworks & Libraries',
+    items:
+      'PyTorch, TensorFlow, Scikit-learn, Spark, OpenCV, scikit-image, Hugging Face (used to experiment with models: self-directed work, not production deployment or fine-tuning)',
+  },
   {
     title: 'Data Science & Machine Learning',
     items:
@@ -204,9 +212,9 @@ export const cvSkills = [
   { title: 'Databases', items: 'Relational Databases (MySQL, PostgreSQL, MS SQL), NoSQL (MongoDB)' },
   { title: 'Tools & Platforms', items: 'Git, Docker, Linux, Firebase' },
   {
-    title: 'AI-Assisted Development',
+    title: 'AI-Assisted Development / Agentic Engineering',
     items:
-      'Claude and Claude Code used hands-on as part of everyday development work, including building custom agent skills, hooks, and repeatable workflows rather than one-off prompting',
+      'Claude and Claude Code used hands-on as part of everyday development work, including building custom agent skills, hooks, and repeatable workflows rather than one-off prompting; MCP servers and tool composition; subagent orchestration, delegating work to agents that run in parallel or spawn further agents',
   },
 ];
 
@@ -218,7 +226,11 @@ export const cvSoftSkills = [
 
 export const cvLanguages = [
   { lang: 'Finnish', level: 'A2.1 Intermediate, 15 ECTS completed at the University of Oulu' },
-  { lang: 'English', level: 'Proficient, C2 / IELTS 8.0' },
+  {
+    lang: 'English',
+    level:
+      'Proficient, IELTS Overall Band 8.0 (CEFR C1 as stated on the certificate). Bands: Listening 9.0, Reading 7.5, Writing 7.0, Speaking 8.5',
+  },
   { lang: 'Urdu', level: 'Native' },
 ];
 
@@ -255,8 +267,8 @@ export const cvVolunteering = [
 ];
 
 export const cvPublication = {
-  title: 'Integrating Meteorological and Operational Data: A Novel Approach to Understanding Railway Delays in Finland',
-  venue: 'arXiv preprint (cs.LG), CC BY 4.0',
+  title: 'FI-TW: An Open Train-Weather Dataset for Railway Delay Analysis in Finland',
+  venue: 'arXiv preprint (cs.LG), CC BY 4.0 · DOI 10.48550/arXiv.2601.16592',
   date: 'Jan 2026',
   bullets: [
     'Co-authored a preprint introducing the first publicly available dataset linking Finnish railway operations with synchronized meteorological data, 2018 to 2024: approximately 38.5 million observations across the 5,915 km rail network and 209 weather stations.',
@@ -264,6 +276,20 @@ export const cvPublication = {
   ],
   href: 'https://arxiv.org/abs/2601.16592',
 };
+
+/* Grants and funding. Amount and dates verbatim from the master CV; the
+   application number and the referees stay off the site. */
+export const cvGrants = [
+  {
+    title: "Master's Thesis Grant in AI",
+    org: 'Technology Industries of Finland Centennial Foundation (Teknologiateollisuuden 100-vuotissäätiö)',
+    date: 'Dec 2025',
+    bullets: [
+      "20,000 EUR personal grant under the foundation's Grants for Master's Thesis in AI programme, for the Master's thesis Enhancing Context-Aware Insight Generation in Corporate Learning Platforms via Retrieval-Augmented Language Models, carried out in collaboration with Valamis Group Oy.",
+      'Awarded 8 December 2025, funding the thesis work from January to May 2026.',
+    ],
+  },
+];
 
 export const cvInterests = [
   'Artificial General Intelligence',

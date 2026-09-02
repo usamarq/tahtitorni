@@ -20,7 +20,7 @@ const personLd = {
     { '@type': 'CollegeOrUniversity', name: 'National University of Computer & Emerging Sciences (FAST-NUCES)' },
   ],
   sameAs: socials
-    .filter((s) => ['GitHub', 'LinkedIn', 'Instagram', 'Twitter'].includes(s.label) && s.href)
+    .filter((s) => ['GitHub', 'LinkedIn', 'ORCID', 'Instagram', 'Twitter'].includes(s.label) && s.href)
     .map((s) => s.href),
 };
 ---
@@ -39,8 +39,8 @@ const personLd = {
         I design, build and evaluate <strong>machine learning systems</strong>: deep learning
         and machine vision, NLP and retrieval-augmented LLMs, and the data and evaluation work
         that takes them from prototype to delivery. MSc in Computer Science and Engineering (AI)
-        from the University of Oulu, 2026, on top of four years in industry across development,
-        consulting and technical project management.
+        from the University of Oulu, 2026, preceded by over two years in industry across
+        development, consulting and technical project management.
       </p>
       <p class="obs-line">
         {heroMetrics.map((m) => (
