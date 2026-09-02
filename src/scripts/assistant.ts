@@ -29,7 +29,7 @@ const history: Turn[] = [];
 let busy = false;
 let aborter: AbortController | null = null;
 
-/* ---------- minimal, escape-first markdown: links + bold only ---------- */
+/* ---------- minimal, escape-first markdown: links, bold, italics, bullets ---------- */
 function esc(s: string) {
   return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
@@ -41,6 +41,10 @@ function render(md: string) {
   });
   h = h.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
   h = h.replace(/^[-•*] +(.*)$/gm, '<span class="li">✦ $1</span>');
+  /* single-asterisk emphasis, after the bullet pass so a leading "* " is
+     never taken for an opening star; no space just inside either star */
+  h = h.replace(/*(S(?:[^*
+]*S)?)*/g, '<em>$1</em>');
   return h.replace(/\n{2,}/g, '<br><br>').replace(/\n/g, '<br>');
 }
 
