@@ -43,8 +43,7 @@ function render(md: string) {
   h = h.replace(/^[-•*] +(.*)$/gm, '<span class="li">✦ $1</span>');
   /* single-asterisk emphasis, after the bullet pass so a leading "* " is
      never taken for an opening star; no space just inside either star */
-  h = h.replace(/*(S(?:[^*
-]*S)?)*/g, '<em>$1</em>');
+  h = h.replace(/\*(\S(?:[^*\n]*\S)?)\*/g, '<em>$1</em>');
   return h.replace(/\n{2,}/g, '<br><br>').replace(/\n/g, '<br>');
 }
 
