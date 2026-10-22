@@ -34,7 +34,7 @@ const toy = entry.data.toy ? toys.find((t) => t.id === entry.data.toy) : undefin
         <a href="/work/">Work</a> <i>✦</i> <span>{groupLabel}</span>
         <span class="plate">{plate}</span>
       </p>
-      <h1>{entry.data.title}</h1>
+      <h1 style={`view-transition-name: wt-${entry.id}`}>{entry.data.title}</h1>
       <p class="meta">{entry.data.kind} · {entry.data.org} · {entry.data.dates}</p>
       {entry.data.metrics && <p class="metrics">{entry.data.metrics}</p>}
       {entry.data.links.length > 0 && (
@@ -54,7 +54,7 @@ const toy = entry.data.toy ? toys.find((t) => t.id === entry.data.toy) : undefin
     </div>
 
     {toy && (
-      <aside class="toy-note">
+      <aside class="toy-note" data-reveal>
         <span class="lab">From the playground</span>
         <p>
           <a href={toy.href}><i>✦</i> {toy.title}</a> · {toy.desc.replace(/\.$/, '')} · it runs
@@ -63,7 +63,7 @@ const toy = entry.data.toy ? toys.find((t) => t.id === entry.data.toy) : undefin
       </aside>
     )}
 
-    <nav class="pager" aria-label="More work">
+    <nav class="pager" aria-label="More work" data-reveal>
       {prev ? <a href={`/work/${prev.id}/`} rel="prev">← {prev.data.title}</a> : <span></span>}
       {next ? <a href={`/work/${next.id}/`} rel="next">{next.data.title} →</a> : <span></span>}
     </nav>
@@ -72,14 +72,18 @@ const toy = entry.data.toy ? toys.find((t) => t.id === entry.data.toy) : undefin
 
 <style>
   .head-zone { position: relative; overflow: hidden; }
+  /* the entry's constellation sits off to the right of the text column and
+     fades out toward it, so it never sits under the title or metadata */
   .big-sigil {
     position: absolute;
-    right: 5%;
+    right: max(2%, calc(50% - 660px));
     top: 34px;
     z-index: 0;
     color: var(--brass);
     opacity: 0.13;
     pointer-events: none;
+    -webkit-mask-image: linear-gradient(to right, transparent 0%, black 60%);
+    mask-image: linear-gradient(to right, transparent 0%, black 60%);
   }
   .detail-head {
     position: relative;
@@ -197,11 +201,15 @@ const toy = entry.data.toy ? toys.find((t) => t.id === entry.data.toy) : undefin
   .pager a[rel='next'] { text-align: right; margin-left: auto; }
   .pager a:hover { color: var(--brass); }
 
-  @media (max-width: 900px) {
+  @media (max-width: 1100px) {
     .big-sigil { display: none; }
   }
   @media (max-width: 760px) {
     .detail-head { padding-top: 36px; }
+    .prose :global(p) { font-size: 16.5px; }
+    .prose :global(ul) { font-size: 16px; }
+    .toy-note p { font-size: 15.5px; }
+    .pager { font-size: 15px; }
   }
 
   /* plate label running down the left margin, atlas style */

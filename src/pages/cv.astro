@@ -298,6 +298,14 @@ import {
     section { padding-top: 38px; }
     .entry { grid-template-columns: 1fr; gap: 4px; padding: 14px 0; }
     .when { padding-top: 0; }
+    /* contact links stack one per line, so the dot separators go */
+    .contact { flex-direction: column; align-items: flex-start; gap: 8px; }
+    .contact span { display: none; }
+    /* reading sizes up a step on phones */
+    .summary .text { font-size: 16px; }
+    .what ul { font-size: 15.5px; }
+    .what .org { font-size: 14.5px; }
+    .plain { font-size: 15.5px; }
   }
 
   @media print {

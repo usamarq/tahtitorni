@@ -18,6 +18,44 @@
 html {
   background: var(--bg);
   overflow-x: hidden;
+  /* in-page jumps land below the sticky header */
+  scroll-padding-top: 84px;
+}
+
+/* ---- page transitions ----
+   Same-origin navigations crossfade instead of blinking, the header holds
+   still (it carries its own view-transition-name), and work titles named
+   wt-<slug> glide from a list into their page. Browsers without
+   cross-document view transitions just navigate; reduced motion opts out. */
+@media (prefers-reduced-motion: no-preference) {
+  @view-transition {
+    navigation: auto;
+  }
+}
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 0.3s;
+  animation-timing-function: cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+::view-transition-group(*) {
+  animation-duration: 0.42s;
+  animation-timing-function: cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+/* ---- scroll reveals ----
+   delights.ts adds .reveal-on to <html> only when it can run the observer
+   and motion is welcome, after marking whatever is already on screen as
+   shown; without it (no JS, a script error, print) nothing is hidden. */
+@media (prefers-reduced-motion: no-preference) {
+  .reveal-on [data-reveal] {
+    transition:
+      opacity 0.7s ease var(--reveal-delay, 0s),
+      transform 0.8s cubic-bezier(0.2, 0.7, 0.2, 1) var(--reveal-delay, 0s);
+  }
+  .reveal-on [data-reveal]:not(.is-in) {
+    opacity: 0;
+    transform: translateY(16px);
+  }
 }
 
 body {
@@ -121,6 +159,7 @@ h1 em { font-style: italic; font-weight: 440; }
   color: var(--brass);
   box-shadow: 0 0 18px hsl(var(--accent-h) 55% 55% / 0.14);
 }
+button.btn { background: transparent; cursor: pointer; font-family: inherit; line-height: inherit; }
 .btn.ghost { border-color: var(--hairline); color: var(--muted); }
 .btn.ghost:hover { color: var(--ink); background: transparent; border-color: var(--faint); }
 
@@ -412,6 +451,7 @@ h1 em { font-style: italic; font-weight: 440; }
   }
   body { background: #fff; font-size: 13px; }
   .no-print, .grain, .margin-sky, .decl { display: none !important; }
+  [data-reveal] { opacity: 1 !important; transform: none !important; }
   .sec-rule { background: none; height: auto; }
 }
 

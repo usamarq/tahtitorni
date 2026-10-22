@@ -74,6 +74,42 @@ for (const btn of document.querySelectorAll<HTMLElement>('.ask-open')) {
   btn.addEventListener('click', () => ACTIONS.ask());
 }
 
+/* "Copy email" buttons: copy, toast, and say so on the button itself */
+for (const btn of document.querySelectorAll<HTMLButtonElement>('.copy-email')) {
+  const label = btn.textContent;
+  btn.addEventListener('click', () => {
+    ACTIONS.email();
+    btn.textContent = 'Copied ✓';
+    window.setTimeout(() => (btn.textContent = label), 2000);
+  });
+}
+
+/* ---------- scroll reveals ----------
+   Blocks marked data-reveal fade up once as they enter the viewport.
+   Whatever is already on screen is marked shown first, so nothing visible
+   ever blinks out; then .reveal-on arms the CSS. Skipped entirely under
+   reduced motion or without IntersectionObserver, leaving all content as
+   it was rendered. */
+{
+  const els = [...document.querySelectorAll<HTMLElement>('[data-reveal]')];
+  if (els.length && !reduced && 'IntersectionObserver' in window) {
+    const fold = window.innerHeight * 0.94;
+    for (const el of els) if (el.getBoundingClientRect().top < fold) el.classList.add('is-in');
+    document.documentElement.classList.add('reveal-on');
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const en of entries) {
+          if (!en.isIntersecting) continue;
+          en.target.classList.add('is-in');
+          io.unobserve(en.target);
+        }
+      },
+      { rootMargin: '0px 0px -6% 0px', threshold: 0.05 }
+    );
+    for (const el of els) if (!el.classList.contains('is-in')) io.observe(el);
+  }
+}
+
 /* ---------- palette ---------- */
 function buildItems(): Item[] {
   const items: Item[] = [

@@ -18,7 +18,7 @@ import PageHeader from '../components/PageHeader.astro';
   />
 
   <div class="wrap widgets">
-    <section class="widget" id="optimizer-race" data-widget="optimizer">
+    <section class="widget" id="optimizer-race" data-widget="optimizer" data-reveal>
       <p class="sec-label">01 · Optimizer race</p>
       <hr class="sec-rule" />
       <p class="desc">
@@ -38,7 +38,7 @@ import PageHeader from '../components/PageHeader.astro';
       </div>
     </section>
 
-    <section class="widget" id="digit-sketchpad" data-widget="digits">
+    <section class="widget" id="digit-sketchpad" data-widget="digits" data-reveal>
       <p class="sec-label">02 · Digit sketchpad</p>
       <hr class="sec-rule" />
       <p class="desc">
@@ -63,7 +63,7 @@ import PageHeader from '../components/PageHeader.astro';
       </div>
     </section>
 
-    <section class="widget" id="perfect-circle" data-widget="circle">
+    <section class="widget" id="perfect-circle" data-widget="circle" data-reveal>
       <p class="sec-label">03 · Perfect circle</p>
       <hr class="sec-rule" />
       <p class="desc">
@@ -81,7 +81,7 @@ import PageHeader from '../components/PageHeader.astro';
       </div>
     </section>
 
-    <section class="widget" id="flow-field" data-widget="flow">
+    <section class="widget" id="flow-field" data-widget="flow" data-reveal>
       <p class="sec-label">04 · Flow field</p>
       <hr class="sec-rule" />
       <p class="desc">
@@ -152,6 +152,7 @@ import PageHeader from '../components/PageHeader.astro';
 
   @media (max-width: 760px) {
     section.widget { padding: 44px 0 4px; }
+    .desc { font-size: 16px; }
     .pad-grid { grid-template-columns: 1fr; gap: 20px; padding: 16px; }
     .guess { font-size: 64px; }
     canvas.race { height: 340px; }

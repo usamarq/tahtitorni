@@ -8,6 +8,7 @@ import { capabilities, experience, heroMetrics, selectedWork, toys } from '../da
 import { postcards, showPostcards } from '../data/postcards';
 
 const workTotal = (await getCollection('work')).length;
+const linkedin = socials.find((s) => s.label === 'LinkedIn')?.href;
 
 const personLd = {
   '@context': 'https://schema.org',
@@ -45,21 +46,31 @@ const personLd = {
         from the University of Oulu, 2026, preceded by over two years in industry across
         development, consulting and technical project management.
       </p>
-      <p class="obs-line">
+      <ul class="stats" aria-label="At a glance">
         {heroMetrics.map((m) => (
-          <span><b>{m.value}</b> · {m.label}</span>
+          <li>
+            <a class="stat" href={m.href}>
+              <span class="v">{m.value}</span>
+              <span class="l">
+                {m.label.split(' · ').map((part) => (
+                  <span>{part}</span>
+                ))}
+              </span>
+            </a>
+          </li>
         ))}
-      </p>
+      </ul>
       <div class="ctas">
         <a class="btn" href="/work">View work</a>
         <a class="btn ghost" href="/cv">Read the CV</a>
+        <button class="btn ghost ask-open" type="button">Ask about my work <i aria-hidden="true">✦</i></button>
       </div>
     </div>
     <a class="sky-note" href="/playground">this sky is playable <i>✦</i> there's a whole playground</a>
   </header>
 
   <div class="wrap">
-    <section id="range" data-sec="01">
+    <section id="range" data-sec="01" data-reveal>
       <p class="sec-label">What I do</p>
       <hr class="sec-rule" />
       <div class="fields">
@@ -80,19 +91,23 @@ const personLd = {
       <p class="sec-label">Selected work <span class="count">{selectedWork.length} of {workTotal}</span></p>
       <hr class="sec-rule" />
       {selectedWork.map((w) => (
-        <article class="work-row">
+        <article class="work-row" data-reveal>
           <div class="meta">
             {w.meta.map((line) => (
               <span>{line}<br /></span>
             ))}
           </div>
           <div>
-            <h2><a href={w.links[0].href} target="_blank" rel="noopener">{w.title}</a></h2>
+            <h2 style={`view-transition-name: wt-${w.slug}`}>
+              <a class="row-link" href={`/work/${w.slug}/`}>
+                {w.title}<span class="go" aria-hidden="true">→</span>
+              </a>
+            </h2>
             <p>{w.desc}</p>
             <p class="metrics">{w.metrics}</p>
             <div class="links">
               {w.links.map((l) => (
-                <a href={l.href} target="_blank" rel="noopener">{l.label}</a>
+                <a href={l.href} target="_blank" rel="noopener">{l.label} ↗</a>
               ))}
             </div>
           </div>
@@ -101,7 +116,7 @@ const personLd = {
       <a class="all-link" href="/work">All work <i>✦</i> {workTotal} entries</a>
     </section>
 
-    <section id="playground" data-sec="03">
+    <section id="playground" data-sec="03" data-reveal>
       <p class="sec-label">Playground <span class="count">toys, not work</span></p>
       <div class="toys">
         {toys.map((t) => (
@@ -116,7 +131,7 @@ const personLd = {
       <a class="all-link" href="/playground">Open the playground <i>✦</i></a>
     </section>
 
-    <section id="experience" data-sec="04">
+    <section id="experience" data-sec="04" data-reveal>
       <p class="sec-label">Experience</p>
       <hr class="sec-rule" />
       {experience.map((e) => (
@@ -126,6 +141,22 @@ const personLd = {
           <span class="org">{e.org}</span>
         </div>
       ))}
+    </section>
+
+    <section id="contact" data-sec="05" data-reveal>
+      <p class="sec-label">Get in touch</p>
+      <hr class="sec-rule" />
+      <div class="contact">
+        <h2>Looking for AI/ML engineering, data science and research roles.</h2>
+        <p>Based in Oulu, Finland. Email is the fastest way to reach me.</p>
+        <div class="ctas">
+          <a class="btn" href={`mailto:${site.email}`}>Email me</a>
+          <button class="btn ghost copy-email" type="button">Copy email</button>
+          {linkedin && (
+            <a class="btn ghost" href={linkedin} target="_blank" rel="noopener">LinkedIn ↗</a>
+          )}
+        </div>
+      </div>
     </section>
 
     {showPostcards && (
@@ -193,16 +224,45 @@ const personLd = {
   }
   .lede { max-width: 60ch; color: var(--muted); font-size: 18px; }
   .lede strong { color: var(--ink); font-weight: 600; }
-  .obs-line {
-    margin-top: 34px;
-    font-family: var(--ff-mono);
-    font-size: 13px;
-    color: var(--faint);
-    font-variant-numeric: tabular-nums;
+
+  /* the three numbers, each linked to the page that backs it */
+  .stats {
+    list-style: none;
+    padding: 0;
+    margin: 40px 0 0;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, max-content));
   }
-  .obs-line span { margin-right: 26px; white-space: nowrap; display: inline-block; }
-  .obs-line b { color: var(--brass); font-weight: 600; }
+  .stats li + li { border-left: 1px solid var(--hairline); }
+  .stat { display: block; padding: 2px 30px; }
+  .stats li:first-child .stat { padding-left: 0; }
+  .stat .v {
+    display: block;
+    font-family: var(--ff-serif);
+    font-size: 42px;
+    font-weight: 500;
+    line-height: 1.05;
+    color: var(--brass);
+    font-variant-numeric: lining-nums;
+    transition: text-shadow 0.2s ease;
+  }
+  .stat .l {
+    display: block;
+    margin-top: 8px;
+    max-width: 22ch;
+    font-family: var(--ff-mono);
+    font-size: 12px;
+    line-height: 1.5;
+    color: var(--faint);
+    transition: color 0.2s ease;
+  }
+  /* "answer quality · thesis RAG" reads as two short lines, never a dangling dot */
+  .stat .l span { display: block; }
+  .stat:hover .v { text-shadow: 0 0 20px hsl(var(--accent-h) 60% 60% / 0.4); }
+  .stat:hover .l { color: var(--muted); }
+
   .ctas { display: flex; gap: 16px; margin-top: 40px; flex-wrap: wrap; }
+  .ctas .btn i { font-style: normal; color: var(--brass); margin-left: 4px; }
 
   /* corner note: the hero sky itself is interactive, and there is more */
   .sky-note {
@@ -257,7 +317,10 @@ const personLd = {
   .field li { color: var(--muted); font-size: 14.5px; padding: 5px 0; border-bottom: 1px solid var(--hairline); }
   .field li:last-child { border-bottom: 0; }
 
+  /* the whole row opens the entry's page; the outside links sit above
+     the row link so they stay clickable on their own */
   .work-row {
+    position: relative;
     display: grid;
     grid-template-columns: 200px 1fr;
     gap: 26px;
@@ -272,7 +335,19 @@ const personLd = {
     letter-spacing: 0.005em;
     margin-bottom: 10px;
   }
-  .work-row h2 a:hover { color: var(--brass); }
+  .row-link::after { content: ''; position: absolute; inset: 0; }
+  .row-link .go {
+    display: inline-block;
+    margin-left: 0.3em;
+    color: var(--brass);
+    opacity: 0;
+    transform: translateX(-6px);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+  }
+  .work-row:hover .row-link,
+  .row-link:focus-visible { color: var(--brass); }
+  .work-row:hover .go,
+  .row-link:focus-visible .go { opacity: 1; transform: none; }
   .work-row p { color: var(--muted); font-size: 15px; max-width: 58ch; }
   .work-row .metrics {
     margin-top: 14px;
@@ -281,7 +356,7 @@ const personLd = {
     color: var(--brass);
     font-variant-numeric: tabular-nums;
   }
-  .work-row .links { margin-top: 10px; display: flex; gap: 20px; font-size: 13.5px; }
+  .work-row .links { position: relative; z-index: 1; margin-top: 10px; display: flex; gap: 20px; font-size: 13.5px; width: fit-content; }
   .work-row .links a { color: var(--muted); border-bottom: 1px solid var(--hairline); padding-bottom: 1px; }
   .work-row .links a:hover { color: var(--brass); border-color: var(--brass-line); }
   .all-link {
@@ -336,6 +411,18 @@ const personLd = {
     text-transform: uppercase;
   }
 
+  /* closing note: one line on what he is looking for, and the ways in */
+  .contact { padding-top: 18px; }
+  .contact h2 {
+    font-family: var(--ff-serif);
+    font-size: clamp(26px, 3.4vw, 34px);
+    font-weight: 500;
+    line-height: 1.2;
+    max-width: 24ch;
+  }
+  .contact p { margin-top: 12px; color: var(--muted); font-size: 16px; max-width: 52ch; }
+  .contact .ctas { margin-top: 28px; }
+
   .cards-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 18px; margin-top: 16px; }
   .postcard {
     display: block;
@@ -360,11 +447,21 @@ const personLd = {
   @media (max-width: 760px) {
     .hero { padding-top: 56px; padding-bottom: 64px; }
     .sky-note { right: 18px; bottom: 12px; font-size: 10.5px; }
-    .obs-line span { display: block; margin: 0 0 6px; }
+    .stats { grid-template-columns: repeat(3, minmax(0, 1fr)); margin-top: 34px; }
+    .stat { padding: 2px 12px; }
+    .stat .v { font-size: 30px; }
+    .stat .l { font-size: 11px; }
     .work-row { grid-template-columns: 1fr; gap: 10px; padding: 24px 0; }
     .exp-row { grid-template-columns: 1fr; gap: 2px; }
     .exp-row .org { text-align: left; }
     section { padding: 56px 0 4px; }
+    /* reading sizes up a step on phones; mono metadata stays small */
+    .work-row p { font-size: 16px; }
+    .field li { font-size: 15.5px; }
+    .toy p { font-size: 15.5px; }
+    .exp-row .role { font-size: 16px; }
+    .exp-row .org { font-size: 15px; }
+    .contact p { font-size: 16.5px; }
   }
 </style>
 

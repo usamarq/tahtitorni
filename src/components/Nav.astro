@@ -4,27 +4,34 @@ const path = Astro.url.pathname;
 const isActive = (href: string) => path === href || path.startsWith(href + '/');
 ---
 
-<div class="wrap">
-  <nav aria-label="Main">
-    <a class="brand" href="/">Usama<i> ✦ </i>Raheel</a>
+<!-- Sticky header. The extra top padding scrolls away (top is negative),
+     so once it sticks it is a slim, centred bar; nothing below it moves.
+     It tucks away on scroll down and returns on scroll up (Nav script). -->
+<header class="site-head" id="site-head">
+  <div class="wrap">
+    <nav aria-label="Main">
+      <a class="brand" href="/">Usama<i> ✦ </i>Raheel</a>
 
-    <div class="right">
-      <div class="links" id="nav-links">
-        {nav.map((item) => (
-          <a href={item.href} aria-current={isActive(item.href) ? 'page' : undefined}>
-            {item.label}{item.live && <i class="live" aria-hidden="true" title="live widgets"></i>}
-          </a>
-        ))}
-        <button class="nav-ask ask-open" type="button">Ask<i aria-hidden="true"> ✦</i></button>
+      <div class="right">
+        <div class="links" id="nav-links">
+          {nav.map((item) => (
+            <a href={item.href} aria-current={isActive(item.href) ? 'page' : undefined}>
+              {item.label}{item.live && <i class="live" aria-hidden="true" title="live widgets"></i>}
+            </a>
+          ))}
+          <button class="nav-ask ask-open" type="button">Ask<i aria-hidden="true"> ✦</i></button>
+        </div>
+        <button class="theme" id="theme-toggle" aria-label="Toggle color theme" title="Toggle theme">
+          <span class="moon" aria-hidden="true">☾</span>
+          <span class="sun" aria-hidden="true">☀</span>
+        </button>
+        <button class="burger" id="menu-open" aria-label="Open menu" aria-controls="menu" aria-expanded="false">
+          Menu<span class="star" aria-hidden="true"> ✦</span>
+        </button>
       </div>
-      <button class="theme" id="theme-toggle" aria-label="Toggle color theme" title="Toggle theme">
-        <span class="moon" aria-hidden="true">☾</span>
-        <span class="sun" aria-hidden="true">☀</span>
-      </button>
-      <button class="burger" id="menu-open" aria-label="Open menu" aria-controls="menu" aria-expanded="false">✦</button>
-    </div>
-  </nav>
-</div>
+    </nav>
+  </div>
+</header>
 
 <div class="menu" id="menu" hidden>
   <div class="menu-inner">
@@ -39,11 +46,31 @@ const isActive = (href: string) => path === href || path.startsWith(href + '/');
 </div>
 
 <style>
+  .site-head {
+    position: sticky;
+    top: -14px;
+    z-index: 50;
+    border-bottom: 1px solid transparent;
+    transition:
+      transform 0.35s cubic-bezier(0.2, 0.7, 0.2, 1),
+      background-color 0.3s ease,
+      border-color 0.3s ease;
+    view-transition-name: site-head;
+  }
+  .site-head.is-scrolled {
+    background-color: color-mix(in srgb, var(--bg) 90%, transparent);
+    -webkit-backdrop-filter: blur(12px) saturate(1.15);
+    backdrop-filter: blur(12px) saturate(1.15);
+    border-bottom-color: var(--hairline);
+  }
+  .site-head.is-hidden { transform: translateY(-100%); }
+
   nav {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 30px 0;
+    /* top = bottom + the 14px that scrolls away, so the stuck bar is centred */
+    padding: 32px 0 18px;
   }
   .brand { font-family: var(--ff-serif); font-size: 19px; letter-spacing: 0.02em; }
   .brand i { color: var(--brass); font-style: normal; }
@@ -112,12 +139,21 @@ const isActive = (href: string) => path === href || path.startsWith(href + '/');
   :global(:root[data-theme='light']) .theme .moon { display: none; }
   :global(:root[data-theme='light']) .theme .sun { display: inline; }
 
-  .burger { display: none; }
+  .burger {
+    display: none;
+    font-family: var(--ff-sans);
+    font-size: 12px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    padding: 7px 11px;
+  }
+  .burger .star { color: var(--brass); letter-spacing: 0; }
 
+  /* above the sticky header, below the palette and the Ask panel */
   .menu {
     position: fixed;
     inset: 0;
-    z-index: 40;
+    z-index: 58;
     background: var(--bg);
   }
   .menu[hidden] { display: none; }
@@ -148,13 +184,14 @@ const isActive = (href: string) => path === href || path.startsWith(href + '/');
   .menu .close { position: absolute; top: 30px; right: 28px; font-size: 16px; padding: 8px 11px; }
 
   @media (max-width: 760px) {
-    nav { padding: 22px 0; }
+    .site-head { top: -12px; }
+    nav { padding: 24px 0 12px; }
     .links { display: none; }
     .burger { display: block; }
   }
 
   @media print {
-    .wrap, .menu { display: none; }
+    .site-head, .menu { display: none; }
   }
 </style>
 
@@ -187,6 +224,30 @@ const isActive = (href: string) => path === href || path.startsWith(href + '/');
   /* the Ask entry opens the assistant overlay; close the menu underneath */
   menu?.querySelector('.menu-ask')?.addEventListener('click', () => setMenu(false));
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') setMenu(false);
+    if (e.key === 'Escape' && menu && !menu.hidden) setMenu(false);
   });
+
+  // sticky header: a background once the page moves, and out of the way
+  // while reading downward. Never hides for reduced-motion visitors, while
+  // an overlay holds the page (body overflow locked), or with focus inside.
+  const head = document.getElementById('site-head');
+  if (head) {
+    const still = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let lastY = window.scrollY;
+    /* runs on every scroll event (browsers already deliver at most one per
+       frame), so each direction change is seen even when frames are
+       throttled; class toggles that change nothing cost nothing */
+    const update = () => {
+      const y = window.scrollY;
+      head.classList.toggle('is-scrolled', y > 16);
+      if (!still && !document.body.style.overflow && !head.contains(document.activeElement)) {
+        if (y > lastY + 6 && y > 180) head.classList.add('is-hidden');
+        else if (y < lastY - 6 || y <= 180) head.classList.remove('is-hidden');
+      }
+      lastY = y;
+    };
+    window.addEventListener('scroll', update, { passive: true });
+    head.addEventListener('focusin', () => head.classList.remove('is-hidden'));
+    update();
+  }
 </script>

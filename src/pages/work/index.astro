@@ -7,6 +7,7 @@ import { workGroups } from '../../data/work';
 
 const entries = (await getCollection('work')).sort((a, b) => a.data.order - b.data.order);
 const total = entries.length;
+const countOf = (id: string) => entries.filter((e) => e.data.group === id).length;
 
 /* Career timeline: one tick per entry, placed by its completion year.
    Entries in the same year fan out slightly so every tick stays visible. */
@@ -25,7 +26,7 @@ const ticks = [...byYear.entries()].flatMap(([y, list]) =>
   list.map((e, i) => {
     const base = ((y - YEAR_MIN) / (YEAR_MAX - YEAR_MIN)) * 100;
     const x = base + (i - (list.length - 1) / 2) * 1.7;
-    return { id: e.id, title: e.data.title, x: Math.min(99.2, Math.max(0.8, x)) };
+    return { id: e.id, title: e.data.title, group: e.data.group, x: Math.min(99.2, Math.max(0.8, x)) };
   })
 );
 ---
@@ -47,33 +48,46 @@ const ticks = [...byYear.entries()].flatMap(([y, list]) =>
       <span class="t-year">{YEAR_MIN}</span>
       <div class="t-rule">
         {ticks.map((t) => (
-          <a class="tick" href={`/work/${t.id}/`} style={`left:${t.x}%`} title={t.title} aria-label={t.title}></a>
+          <a class="tick" href={`/work/${t.id}/`} style={`left:${t.x}%`} title={t.title} aria-label={t.title} data-group={t.group}></a>
         ))}
       </div>
       <span class="t-year">{YEAR_MAX}</span>
     </div>
 
+    <!-- filter chips: shown only when scripts run (html.js), since they do nothing without them -->
+    <div class="filters" role="group" aria-label="Filter work by area">
+      <button type="button" class="chip" data-filter="all" aria-pressed="true">All <span>{total}</span></button>
+      {workGroups.map((g) => (
+        <button type="button" class="chip" data-filter={g.id} aria-pressed="false">{g.short} <span>{countOf(g.id)}</span></button>
+      ))}
+    </div>
+    <p class="filter-status" aria-live="polite"></p>
+
     {workGroups.map((g, gi) => {
       const items = entries.filter((e) => e.data.group === g.id);
       return (
-        <section data-sec={String(gi + 1).padStart(2, '0')}>
+        <section id={g.id} data-group={g.id} data-sec={String(gi + 1).padStart(2, '0')}>
           <p class="sec-label">{g.label}<span class="count">{items.length}</span></p>
           <hr class="sec-rule" />
           {items.map((e) => (
-            <article class="work-row">
+            <article class="work-row" data-reveal>
               <div class="meta">
                 <span>{e.data.kind}</span>
                 <span>{e.data.org}</span>
                 <span>{e.data.dates}</span>
               </div>
               <div>
-                <h2><a href={`/work/${e.id}/`}>{e.data.title}</a></h2>
+                <h2 style={`view-transition-name: wt-${e.id}`}>
+                  <a class="row-link" href={`/work/${e.id}/`}>
+                    {e.data.title}<span class="go" aria-hidden="true">→</span>
+                  </a>
+                </h2>
                 <p>{e.data.blurb}</p>
                 {e.data.metrics && <p class="metrics">{e.data.metrics}</p>}
               </div>
-              <a class="sig" href={`/work/${e.id}/`} aria-hidden="true" tabindex="-1">
+              <span class="sig" aria-hidden="true">
                 <Sigil seed={e.id} size={40} />
-              </a>
+              </span>
             </article>
           ))}
         </section>
@@ -108,6 +122,7 @@ const ticks = [...byYear.entries()].flatMap(([y, list]) =>
     width: 24px;
     height: 24px;
     transform: translateX(-50%);
+    transition: opacity 0.25s ease;
   }
   .tick::after {
     content: '';
@@ -125,11 +140,42 @@ const ticks = [...byYear.entries()].flatMap(([y, list]) =>
     background: var(--brass);
     box-shadow: 0 0 8px hsl(var(--accent-h) 60% 60% / 0.6);
   }
+  /* a filter dims the ticks of the other groups */
+  .tick.dim { opacity: 0.22; }
+
+  .filters { display: none; flex-wrap: wrap; gap: 8px; margin-top: 30px; }
+  :global(.js) .filters { display: flex; }
+  .chip {
+    font-family: var(--ff-sans);
+    font-size: 12.5px;
+    letter-spacing: 0.06em;
+    color: var(--muted);
+    background: transparent;
+    border: 1px solid var(--hairline);
+    border-radius: 999px;
+    padding: 6px 13px;
+    cursor: pointer;
+    transition: color 0.15s ease, border-color 0.15s ease, background-color 0.15s ease;
+  }
+  .chip span { font-family: var(--ff-mono); font-size: 11px; color: var(--faint); margin-left: 4px; }
+  .chip:hover { color: var(--ink); border-color: var(--faint); }
+  .chip[aria-pressed='true'] { color: var(--brass); border-color: var(--brass-line); background: var(--brass-dim); }
+  .chip[aria-pressed='true'] span { color: var(--brass); }
+  .filter-status {
+    min-height: 1px;
+    margin-top: 8px;
+    font-family: var(--ff-mono);
+    font-size: 11.5px;
+    color: var(--faint);
+  }
 
   section { padding: 54px 0 4px; }
   section:first-of-type { padding-top: 40px; }
+  section[hidden] { display: none; }
 
+  /* the whole row opens the entry; the title link's ::after covers it */
   .work-row {
+    position: relative;
     display: grid;
     grid-template-columns: 200px 1fr 56px;
     gap: 26px;
@@ -146,7 +192,19 @@ const ticks = [...byYear.entries()].flatMap(([y, list]) =>
     letter-spacing: 0.005em;
     margin-bottom: 8px;
   }
-  .work-row h2 a:hover { color: var(--brass); }
+  .row-link::after { content: ''; position: absolute; inset: 0; }
+  .row-link .go {
+    display: inline-block;
+    margin-left: 0.3em;
+    color: var(--brass);
+    opacity: 0;
+    transform: translateX(-6px);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+  }
+  .work-row:hover .row-link,
+  .row-link:focus-visible { color: var(--brass); }
+  .work-row:hover .go,
+  .row-link:focus-visible .go { opacity: 1; transform: none; }
   .work-row p { color: var(--muted); font-size: 15px; max-width: 60ch; }
   .work-row .metrics {
     margin-top: 12px;
@@ -166,6 +224,7 @@ const ticks = [...byYear.entries()].flatMap(([y, list]) =>
   @media (max-width: 760px) {
     section { padding: 42px 0 4px; }
     .work-row { grid-template-columns: 1fr; gap: 10px; padding: 22px 0; }
+    .work-row p { font-size: 16px; }
     .sig { display: none; }
   }
 
@@ -203,3 +262,50 @@ const ticks = [...byYear.entries()].flatMap(([y, list]) =>
     .work-row p { font-size: 16px; }
   }
 </style>
+
+<script>
+  /* Area filter: show one group (or all), dim the other groups' timeline
+     ticks, and keep the choice in the URL hash (#research etc.) so it can
+     be linked. Uses a view transition for the reflow where available. */
+  const chips = [...document.querySelectorAll<HTMLButtonElement>('.chip')];
+  const sections = [...document.querySelectorAll<HTMLElement>('section[data-group]')];
+  const ticks = [...document.querySelectorAll<HTMLElement>('.tick')];
+  const status = document.querySelector<HTMLElement>('.filter-status');
+  const total = document.querySelectorAll('.work-row').length;
+  const still = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function apply(filter: string) {
+    for (const c of chips) c.setAttribute('aria-pressed', String(c.dataset.filter === filter));
+    let shown = 0;
+    for (const s of sections) {
+      const on = filter === 'all' || s.dataset.group === filter;
+      s.hidden = !on;
+      if (on) {
+        shown += s.querySelectorAll('.work-row').length;
+        /* rows revealed by a filter appear at once, not on scroll */
+        s.querySelectorAll('[data-reveal]').forEach((el) => el.classList.add('is-in'));
+      }
+    }
+    for (const t of ticks) t.classList.toggle('dim', filter !== 'all' && t.dataset.group !== filter);
+    if (status) status.textContent = filter === 'all' ? '' : `Showing ${shown} of ${total} entries`;
+  }
+
+  function choose(filter: string) {
+    const run = () => apply(filter);
+    const doc = document as Document & { startViewTransition?: (cb: () => void) => unknown };
+    if (doc.startViewTransition && !still) doc.startViewTransition(run);
+    else run();
+    history.replaceState(null, '', filter === 'all' ? location.pathname : `#${filter}`);
+  }
+
+  for (const c of chips) c.addEventListener('click', () => choose(c.dataset.filter || 'all'));
+
+  /* the hash picks the filter on load and whenever it changes in place
+     (an in-page link, or the address bar), not only on full loads */
+  const fromHash = () => {
+    const h = location.hash.slice(1);
+    return sections.some((s) => s.dataset.group === h) ? h : 'all';
+  };
+  if (fromHash() !== 'all') apply(fromHash());
+  window.addEventListener('hashchange', () => apply(fromHash()));
+</script>

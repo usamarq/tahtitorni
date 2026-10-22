@@ -67,8 +67,11 @@ const ogImage = new URL(image, Astro.site);
     <meta name="generator" content={Astro.generator} />
     <slot name="head" />
     <script is:inline>
-      // runs before first paint: honor a stored theme override
+      // runs before first paint: flag that scripts run (JS-only controls
+      // such as the work filters key off html.js), then honor a stored
+      // theme override
       (function () {
+        document.documentElement.classList.add('js');
         try {
           var t = localStorage.getItem('theme');
           if (t === 'light' || t === 'dark') document.documentElement.dataset.theme = t;

@@ -10,10 +10,11 @@ export const experience = [
   { years: '2020 - 2021', role: 'Teaching Assistant', org: 'FAST-NUCES' },
 ];
 
+/* Each hero number links to the page that backs it. */
 export const heroMetrics = [
-  { value: '82.7%', label: 'answer quality · thesis RAG' },
-  { value: '38.5M', label: 'observations · FI-TW open dataset' },
-  { value: '2+ yrs', label: 'industry before the MSc' },
+  { value: '82.7%', label: 'answer quality · thesis RAG', href: '/work/thesis-rag-insights/' },
+  { value: '38.5M', label: 'observations · FI-TW open dataset', href: '/work/railway-delays-dataset/' },
+  { value: '2+ yrs', label: 'industry before the MSc', href: '/cv/' },
 ];
 
 /* The breadth strip: what he works on overall, from the master CV skills
@@ -33,8 +34,13 @@ export const capabilities = [
   },
 ];
 
+/* Home page picks. Titles open the entry's own page (slug); the links
+   are the outside references shown underneath. Lead with work whose code
+   or record is Usama's own: BloomOulu's code lives in a teammate's repo,
+   so it stays on /work rather than here. */
 export const selectedWork = [
   {
+    slug: 'thesis-rag-insights',
     meta: ['MSC THESIS', 'Valamis Group / Univ. of Oulu', '2025 - 2026'],
     title: 'Context-Aware Insight Generation via RAG',
     desc: 'A RAG assistant that turns corporate learning data into business insights. Hybrid retrieval (column mapping, intent detection, dense search) with two LLM judges validated against human ratings.',
@@ -42,6 +48,7 @@ export const selectedWork = [
     links: [{ label: 'Thesis, open access', href: 'https://oulurepo.oulu.fi/handle/10024/63278' }],
   },
   {
+    slug: 'railway-delays-dataset',
     meta: ['OPEN RESEARCH EUROPE', 'Article 6:324 · CC BY 4.0', '2026'],
     title: 'Railway Delays and Finnish Weather',
     desc: 'The first publicly available dataset linking Finnish railway operations with synchronized weather, 2018-2024: about 38.5 million observations across 5,915 km of rail and 209 weather stations. Co-authored, published on Open Research Europe with open peer review in progress.',
@@ -52,16 +59,15 @@ export const selectedWork = [
     ],
   },
   {
-    meta: ['TEAM PROJECT · GROWTHHACK 2026', 'Univ. of Oulu Botanical Garden', '2026'],
-    title: 'BloomOulu: A Living Garden, Digitised',
-    desc: 'A multilingual (English, Finnish, Swedish) platform for the University of Oulu Botanical Garden: plant adoption, QR-linked plant pages, an interactive map, and an AI chat guide that answers from the garden\'s own data and shows its sources. Built and deployed the React front end and the chat guide, with Team Meraki.',
-    metrics: 'EN · FI · SV · WCAG 2.2 AA target',
-    links: [
-      { label: 'Live platform', href: 'https://195-148-30-79.sslip.io/en' },
-      { label: 'Team repo', href: 'https://github.com/hsn07pk/BloomOulu' },
-    ],
+    slug: 'tahtitorni',
+    meta: ['PERSONAL PROJECT', 'usamarq.site', '2026'],
+    title: 'Tähtitorni: This Website and Its Assistant',
+    desc: 'The site you are reading, built with the help of Claude: a static Astro site with live canvas toys, an Ask assistant grounded in a knowledge file behind a small Cloudflare Worker relay, and a digit model trained in plain Node.js.',
+    metrics: 'Astro · Cloudflare Worker relay · MNIST MLP 97.45%',
+    links: [{ label: 'GitHub', href: 'https://github.com/usamarq/tahtitorni' }],
   },
   {
+    slug: 'diabetic-retinopathy',
     meta: ['DEEP LEARNING COURSE', 'University of Oulu', '2024'],
     title: 'Reading Retinas with Deep Learning',
     desc: 'An individual project detecting diabetic retinopathy from retinal images (DeepDRiD): transfer learning on pretrained ResNet and VGG, compared on the task, with augmentation, attention modules and ensembles built in PyTorch, and Grad-CAM heatmaps showing which regions the models relied on. Computer vision applied to healthcare diagnostics.',
