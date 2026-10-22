@@ -67,7 +67,7 @@ function build() {
         <input type="text" maxlength="300" placeholder="Ask about the work, the thesis, the site…" aria-label="Your question" />
         <button type="submit" class="ask-send" aria-label="Send">→</button>
       </form>
-      <p class="ask-foot">runs on a free-tier model · questions pass through a tiny relay, not stored by this site · answers may err — the <a href="/cv">CV</a> is the record</p>
+      <p class="ask-foot">runs on a free-tier model · questions pass through a tiny relay, not stored by this site · answers may err: the <a href="/cv">CV</a> is the record</p>
     </div>`;
   document.body.appendChild(root);
 

@@ -1,7 +1,11 @@
 /* Generates public/og.png and public/og-playground.png (1200x630) in the
    observatory style. Run from the repo root: node scripts/og.mjs
+   Pass "home" or "playground" to regenerate only that card (the star dust
+   is random, so regenerating both churns the untouched one).
    Uses system fonts (Georgia, Segoe UI, Consolas), so regenerate on Windows. */
 import sharp from 'sharp';
+
+const only = process.argv[2];
 
 const star = (cx, cy, s) =>
   `<path d="M ${cx} ${cy - s} L ${cx + s * 0.32} ${cy - s * 0.32} L ${cx + s} ${cy} L ${cx + s * 0.32} ${cy + s * 0.32} L ${cx} ${cy + s} L ${cx - s * 0.32} ${cy + s * 0.32} L ${cx - s} ${cy} L ${cx - s * 0.32} ${cy - s * 0.32} Z" fill="#c9a654"/>`;
@@ -34,7 +38,7 @@ const home = `<svg width="1200" height="630" xmlns="http://www.w3.org/2000/svg">
   <text x="92" y="308" font-family="Georgia, serif" font-size="106" fill="#e9e5da">Usama Raheel</text>
   <text x="96" y="375" font-family="Segoe UI, sans-serif" font-size="29" fill="#98a0b4">Machine learning systems, built and evaluated · Oulu, Finland</text>
   <line x1="96" y1="440" x2="1104" y2="440" stroke="#212a44" stroke-width="2"/>
-  <text x="96" y="492" font-family="Consolas, monospace" font-size="25" fill="#c9a654">82.7% answer quality · MRR 0.96 · arXiv cs.LG co-author</text>
+  <text x="96" y="492" font-family="Consolas, monospace" font-size="25" fill="#c9a654">82.7% answer quality · MRR 0.96 · Open Research Europe co-author</text>
   <text x="96" y="566" font-family="Consolas, monospace" font-size="21" fill="#5f6880">usamarq.site</text>
 </svg>`;
 
@@ -136,7 +140,11 @@ const playground = `<svg width="1200" height="630" xmlns="http://www.w3.org/2000
   <text x="96" y="576" font-family="Consolas, monospace" font-size="21" fill="#5f6880">usamarq.site/playground · no servers, just canvas</text>
 </svg>`;
 
-await sharp(Buffer.from(home)).png().toFile('public/og.png');
-console.log('wrote public/og.png');
-await sharp(Buffer.from(playground)).png().toFile('public/og-playground.png');
-console.log('wrote public/og-playground.png');
+if (!only || only === 'home') {
+  await sharp(Buffer.from(home)).png().toFile('public/og.png');
+  console.log('wrote public/og.png');
+}
+if (!only || only === 'playground') {
+  await sharp(Buffer.from(playground)).png().toFile('public/og-playground.png');
+  console.log('wrote public/og-playground.png');
+}

@@ -1,11 +1,11 @@
 ---
 title: 'Reading Retinas with Deep Learning'
-kind: 'Deep Learning course'
+kind: 'Deep Learning course · individual'
 group: 'coursework'
 org: 'University of Oulu'
 dates: 'Nov - Dec 2024'
 order: 6
-blurb: 'Detecting diabetic retinopathy from retinal images: transfer learning on pretrained ResNet and VGG, compared on the task, with Grad-CAM, attention mechanisms and ensembles.'
+blurb: 'Detecting diabetic retinopathy from retinal images, on my own: transfer learning on pretrained ResNet and VGG, augmentation, attention modules and ensembles in PyTorch, and Grad-CAM heatmaps of the regions the models relied on.'
 metrics: 'ResNet · VGG · transfer learning · Grad-CAM'
 links:
   - label: 'GitHub'
@@ -14,14 +14,19 @@ toy: 'digits'
 ---
 
 A Deep Learning course project at the University of Oulu: detecting diabetic
-retinopathy from retinal images, computer vision applied to healthcare
-diagnostics.
-
-I developed a deep learning model for the task, experimenting with different
-neural network architectures and optimization techniques. The repository walks
-through the comparisons, including Grad-CAM visualizations, attention
-mechanisms and ensembles.
+retinopathy from retinal images in the DeepDRiD dataset, computer vision
+applied to healthcare diagnostics. It was an individual project, and I
+completed all of it on my own, working through the tasks the course set.
 
 Rather than training from scratch, I used transfer learning on pretrained
 convolutional networks including ResNet and VGG, adjusting the model weights
-for the task, and compared them against each other.
+for the task, and compared them against each other while experimenting with
+different architectures and optimization techniques.
+
+Around the models I built, in PyTorch: image augmentation (CutOut, CLAHE and
+custom transformations), spatial, channel and self-attention modules, single-
+and dual-image model variants, and max-voting and weighted-average ensembles.
+
+To see what the networks were looking at, I implemented Grad-CAM heatmaps in
+PyTorch, showing which regions of a retinal image the models relied on for
+their predictions. The repository walks through all of it.

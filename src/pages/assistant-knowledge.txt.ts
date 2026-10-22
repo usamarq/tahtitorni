@@ -28,7 +28,7 @@ export const GET: APIRoute = async () => {
   const lines: string[] = [];
   const push = (s: string) => lines.push(s);
 
-  push(`# ${site.name} — site knowledge`);
+  push(`# ${site.name}: site knowledge`);
   push('');
   push(`${site.name} is an ${site.title} in ${site.location} (${site.latitude}).`);
   push(site.positioning);
@@ -43,13 +43,13 @@ export const GET: APIRoute = async () => {
   push('');
   push('## Experience');
   for (const r of cvRoles) {
-    push(`### ${r.role} — ${r.org} (${r.dates})`);
+    push(`### ${r.role} · ${r.org} (${r.dates})`);
     for (const b of r.bullets) push(`- ${b}`);
   }
   push('');
   push('## Education');
   for (const e of cvEducation) {
-    push(`### ${e.degree} — ${e.school} (${e.dates})`);
+    push(`### ${e.degree} · ${e.school} (${e.dates})`);
     for (const n of e.notes) push(`- ${n}`);
     if (e.link) push(`- ${e.link.label}: ${e.link.href}`);
   }
@@ -62,29 +62,30 @@ export const GET: APIRoute = async () => {
   for (const l of cvLanguages) push(`${l.lang}: ${l.level}`);
   push('');
   push('## Publication');
-  push(`${cvPublication.title} — ${cvPublication.venue} (${cvPublication.date})`);
+  push(`${cvPublication.title} · ${cvPublication.venue} (${cvPublication.date})`);
   for (const b of cvPublication.bullets) push(`- ${b}`);
-  push(`Link: ${cvPublication.href}`);
+  for (const l of cvPublication.links) push(`Link: ${l.href} (${l.label})`);
+  push('Peer review status: published on Open Research Europe with open peer review in progress. Do not describe it as peer-reviewed.');
   push('');
   push('## Grants and funding');
   for (const g of cvGrants) {
-    push(`### ${g.title} — ${g.org} (${g.date})`);
+    push(`### ${g.title} · ${g.org} (${g.date})`);
     for (const b of g.bullets) push(`- ${b}`);
   }
   push('');
   push('## Certifications');
-  for (const c of cvCertifications) push(`- ${c.title} — ${c.org} (${c.date})${c.note ? ` · ${c.note}` : ''}`);
+  for (const c of cvCertifications) push(`- ${c.title} · ${c.org} (${c.date})${c.note ? ` · ${c.note}` : ''}`);
   push('');
   push('## Honors and awards');
-  for (const h of cvHonors) push(`- ${h.title} — ${h.org} (${h.date})`);
+  for (const h of cvHonors) push(`- ${h.title} · ${h.org} (${h.date})`);
   push('');
   push('## Volunteering');
-  for (const v of cvVolunteering) push(`- ${v.title} — ${v.org} (${v.date})`);
+  for (const v of cvVolunteering) push(`- ${v.title} · ${v.org} (${v.date})`);
   push('');
   push('## Interests outside work');
   push(cvInterests.join(', '));
   push('');
-  push('## Work (all 16 entries, each with its own page)');
+  push(`## Work (all ${work.length} entries, each with its own page)`);
   for (const e of work) {
     const group = workGroups.find((g) => g.id === e.data.group)?.label ?? e.data.group;
     push(`### ${e.data.title}`);
@@ -104,7 +105,7 @@ export const GET: APIRoute = async () => {
   push('Pressing Ctrl+K (or Cmd+K) anywhere opens a command palette for jumping to any page or work entry.');
   push('The 404 page hides a star-charting game: light all seven stars to complete the chart.');
   push('The hero sky on the home page is interactive; constellations follow the cursor.');
-  push('This assistant runs directly in the browser against a free-tier language model; questions are not stored by the site.');
+  push('This assistant answers through a small relay to a free-tier language model; questions are not stored by the site. How it is built is described on the Tähtitorni work page (/work/tahtitorni/).');
 
   return new Response(lines.join('\n'), {
     headers: { 'Content-Type': 'text/plain; charset=utf-8' },

@@ -99,13 +99,18 @@ import {
       <div class="entry">
         <div class="when">{cvPublication.date}</div>
         <div class="what">
-          <h2><a href={cvPublication.href} target="_blank" rel="noopener">{cvPublication.title}</a></h2>
+          <h2><a href={cvPublication.links[0].href} target="_blank" rel="noopener">{cvPublication.title}</a></h2>
           <p class="org">{cvPublication.venue}</p>
           <ul>
             {cvPublication.bullets.map((b) => (
               <li>{b}</li>
             ))}
           </ul>
+          <p class="ref">
+            {cvPublication.links.map((l) => (
+              <a href={l.href} target="_blank" rel="noopener">{l.label} ↗</a>
+            ))}
+          </p>
         </div>
       </div>
     </section>
@@ -280,7 +285,7 @@ import {
   .what ul { list-style: disc outside; margin: 10px 0 0 18px; color: var(--muted); font-size: 14.5px; }
   .what li { margin-bottom: 6px; }
   .what li::marker { color: var(--brass); }
-  .what .ref { margin-top: 10px; font-size: 13.5px; }
+  .what .ref { margin-top: 10px; font-size: 13.5px; display: flex; flex-wrap: wrap; gap: 6px 18px; }
   .what .ref a { color: var(--muted); border-bottom: 1px solid var(--hairline); padding-bottom: 1px; }
   .what .ref a:hover { color: var(--brass); border-color: var(--brass-line); }
   .plain { color: var(--muted); font-size: 14.5px; padding-top: 2px; }

@@ -1,10 +1,13 @@
 ---
+import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
 import Sky from '../components/Sky.astro';
 import Portrait from '../components/Portrait.astro';
 import { site, socials } from '../data/site';
 import { capabilities, experience, heroMetrics, selectedWork, toys } from '../data/cv';
 import { postcards, showPostcards } from '../data/postcards';
+
+const workTotal = (await getCollection('work')).length;
 
 const personLd = {
   '@context': 'https://schema.org',
@@ -74,7 +77,7 @@ const personLd = {
     </section>
 
     <section id="work" data-sec="02">
-      <p class="sec-label">Selected work <span class="count">4 of 16</span></p>
+      <p class="sec-label">Selected work <span class="count">{selectedWork.length} of {workTotal}</span></p>
       <hr class="sec-rule" />
       {selectedWork.map((w) => (
         <article class="work-row">
@@ -95,7 +98,7 @@ const personLd = {
           </div>
         </article>
       ))}
-      <a class="all-link" href="/work">All work <i>✦</i> 16 entries</a>
+      <a class="all-link" href="/work">All work <i>✦</i> {workTotal} entries</a>
     </section>
 
     <section id="playground" data-sec="03">

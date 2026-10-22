@@ -1,0 +1,42 @@
+---
+title: 'Tähtitorni: This Website and Its Assistant'
+kind: 'Personal project'
+group: 'systems'
+org: 'usamarq.site'
+dates: 'Aug - Sep 2026'
+order: 11
+blurb: 'The site you are reading, built with the help of Claude: a static Astro site, an Ask panel grounded in a knowledge file behind a small Cloudflare Worker relay, and a digit model trained in plain Node.js.'
+metrics: 'Astro · Cloudflare Worker relay · MNIST MLP 97.45%'
+links:
+  - label: 'GitHub'
+    href: 'https://github.com/usamarq/tahtitorni'
+toy: 'digits'
+---
+
+*Tähtitorni* is Finnish for observatory: the star tower. It is my personal
+website, the one you are reading, which I built with the help of Claude. It is
+a static Astro 5 site in TypeScript with Tailwind CSS, and every interactive
+piece, from the night skies to the playground, is vanilla TypeScript and
+canvas.
+
+## The assistant
+
+The Ask panel is a site assistant grounded in a knowledge file, assembled at
+build time from the same data as the pages, so it answers from what the site
+publishes. The browser talks to a small Cloudflare Worker relay on the Workers
+free tier. The relay holds the Gemini API key in Cloudflare's secret store,
+pins the system prompt and caps, rate-limits per IP, and streams the answer
+through.
+
+When a model returns a quota error, a 404 or a 5xx response, or hangs for 25
+seconds, the relay steps down a fallback chain of Gemini model aliases, and it
+logs each failure for inspection with wrangler tail.
+
+## The digit model
+
+I also trained the model behind the playground's digit sketchpad: a 784-64-10
+multilayer perceptron on MNIST, in plain Node.js with no dependencies. It takes
+about 90 seconds to reach 97.45% test accuracy, and is exported int8-quantized
+(68 KB) for inference in the browser.
+
+A personal project, and the code is public.

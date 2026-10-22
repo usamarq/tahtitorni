@@ -12,7 +12,7 @@ export const experience = [
 
 export const heroMetrics = [
   { value: '82.7%', label: 'answer quality · thesis RAG' },
-  { value: '38.5M', label: 'observations · arXiv dataset' },
+  { value: '38.5M', label: 'observations · FI-TW open dataset' },
   { value: '2+ yrs', label: 'industry before the MSc' },
 ];
 
@@ -42,11 +42,14 @@ export const selectedWork = [
     links: [{ label: 'Thesis, open access', href: 'https://oulurepo.oulu.fi/handle/10024/63278' }],
   },
   {
-    meta: ['ARXIV PREPRINT', 'cs.LG · CC BY 4.0', '2026'],
+    meta: ['OPEN RESEARCH EUROPE', 'Article 6:324 · CC BY 4.0', '2026'],
     title: 'Railway Delays and Finnish Weather',
-    desc: 'First publicly available dataset linking Finnish railway operations with synchronized weather, 2018-2024: about 38.5 million observations across 5,915 km of rail and 209 weather stations.',
+    desc: 'The first publicly available dataset linking Finnish railway operations with synchronized weather, 2018-2024: about 38.5 million observations across 5,915 km of rail and 209 weather stations. Co-authored, published on Open Research Europe with open peer review in progress.',
     metrics: '38.5M observations · XGBoost baseline · 2.73 min MAE',
-    links: [{ label: 'arXiv', href: 'https://arxiv.org/abs/2601.16592' }],
+    links: [
+      { label: 'Open Research Europe', href: 'https://doi.org/10.12688/openreseurope.24750.1' },
+      { label: 'arXiv', href: 'https://arxiv.org/abs/2601.16592' },
+    ],
   },
   {
     meta: ['TEAM PROJECT · GROWTHHACK 2026', 'Univ. of Oulu Botanical Garden', '2026'],
@@ -54,14 +57,14 @@ export const selectedWork = [
     desc: 'A multilingual (English, Finnish, Swedish) platform for the University of Oulu Botanical Garden: plant adoption, QR-linked plant pages, an interactive map, and an AI chat guide that answers from the garden\'s own data and shows its sources. Built and deployed the React front end and the chat guide, with Team Meraki.',
     metrics: 'EN · FI · SV · WCAG 2.2 AA target',
     links: [
-      { label: 'Live demo', href: 'https://bloom-oulu.vercel.app/demo-design/' },
+      { label: 'Live platform', href: 'https://195-148-30-79.sslip.io/en' },
       { label: 'Team repo', href: 'https://github.com/hsn07pk/BloomOulu' },
     ],
   },
   {
     meta: ['DEEP LEARNING COURSE', 'University of Oulu', '2024'],
     title: 'Reading Retinas with Deep Learning',
-    desc: 'A deep learning model for detecting diabetic retinopathy from retinal images: transfer learning on pretrained ResNet and VGG, compared on the task, alongside architecture and optimization experiments with Grad-CAM, attention mechanisms and ensembles. Computer vision applied to healthcare diagnostics.',
+    desc: 'An individual project detecting diabetic retinopathy from retinal images (DeepDRiD): transfer learning on pretrained ResNet and VGG, compared on the task, with augmentation, attention modules and ensembles built in PyTorch, and Grad-CAM heatmaps showing which regions the models relied on. Computer vision applied to healthcare diagnostics.',
     metrics: 'ResNet · VGG · transfer learning · Grad-CAM',
     links: [{ label: 'GitHub', href: 'https://github.com/usamarq/deep_learning_approach_to_detect_diabetic_retinopathy' }],
   },
@@ -103,18 +106,18 @@ export const toys = [
 /* Phone and street address are never published.                       */
 
 export const cvSummary =
-  "AI Research Engineer with an M.Sc. in Computer Science & Engineering (AI specialization) from the University of Oulu, completed July 2026, and over two years of prior industry experience across software development, application consulting, and technical project management. Hands-on in designing and evaluating machine-learning and AI systems in Python and PyTorch, spanning deep learning, NLP and retrieval-augmented generation, machine vision, and data analytics; built and delivered a retrieval-augmented LLM assistant for Valamis's corporate-learning platform as a Master's thesis. Combines this with project-management experience leading cross-functional teams and translating business requirements into technical solutions. Seeking roles in AI/ML engineering, data science, or research.";
+  "AI Research Engineer with an M.Sc. in Computer Science & Engineering (AI specialization) from the University of Oulu, completed June 2026, and over two years of prior industry experience across software development, application consulting, and technical project management. Hands-on in designing and evaluating machine-learning and AI systems in Python and PyTorch, spanning deep learning, NLP and retrieval-augmented generation, machine vision, and data analytics; built and delivered a retrieval-augmented LLM assistant for Valamis's corporate-learning platform as a Master's thesis. Combines this with project-management experience leading cross-functional teams and translating business requirements into technical solutions. Seeking roles in AI/ML engineering, data science, or research.";
 
 export const cvEducation = [
   {
     degree: 'Master of Science (M.Sc.) in Computer Science & Engineering',
     school: 'University of Oulu, Finland',
-    dates: 'Sep 2024 - Jul 2026',
+    dates: 'Sep 2024 - Jun 2026',
     notes: [
       'Artificial Intelligence specialization track, with a focus on machine vision, deep learning, natural language processing, and LLMs.',
       'Grade: average 4.58 on a 0 to 5 scale, 125 credits completed of 120 required. Thesis assessment: 5.',
       'Thesis: Enhancing Context-Aware Insight Generation in Corporate Learning Platforms via Retrieval-Augmented Language Models.',
-      'Relevant coursework: Affective Computing, Machine Vision, Deep Learning, Multi-Modal Data Fusion, Biosignal Processing I, NLP & Text Mining, Introduction to Optimization, International Crisis Management (CriM).',
+      'Relevant coursework: Affective Computing, Machine Vision, Deep Learning, Multi-Modal Data Fusion, Biosignal Processing I, NLP & Text Mining, Introduction to Optimization, International Crisis Management (CriM), and the special course "AI Ethics, Privacy and Legislation".',
       'International Crisis Management (CriM), 5 credits, December 2025: lectures and workshops on the current cybersecurity threat landscape and the development objectives around it, with content set by current threat levels and by different classes of cyberattack, delivered by international practitioners in their fields.',
     ],
     link: { label: 'Thesis, open access', href: 'https://oulurepo.oulu.fi/handle/10024/63278' },
@@ -181,6 +184,7 @@ export const cvRoles = [
       'The platform let salaried customers draw instant loans and repay them after their salary was paid. Built the data analysis and the machine learning models behind its credit assessment: predicting whether an applicant would repay on time, and what loan amount could be extended to them.',
       'The system shortened the loan approval process, which conventionally requires extensive paperwork and manual approvals in Pakistan.',
       'Developed customized MIS reports using SQL to meet diverse business requirements.',
+      'Built a complex query for an MIS report whose source table held entire JSON data structures inside one of its columns: parsed that JSON with SQL only, no other script, using pivoting, loops and other complex operations, and presented the extracted data in the report.',
       'Acted as a bridge between development and product teams by analyzing business requirements and ensuring accurate technical implementation.',
     ],
   },
@@ -266,15 +270,22 @@ export const cvVolunteering = [
   { title: 'Event Assistant, AIS25 Conference', org: 'University of Oulu', date: 'Jun 2025' },
 ];
 
+/* Published on Open Research Europe, which publishes first and reviews
+   openly afterwards: write "open peer review in progress", never
+   "peer-reviewed", until the platform shows the article as approved.
+   The ORE version is cited first, the arXiv preprint second. */
 export const cvPublication = {
   title: 'FI-TW: An Open Train-Weather Dataset for Railway Delay Analysis in Finland',
-  venue: 'arXiv preprint (cs.LG), CC BY 4.0 · DOI 10.48550/arXiv.2601.16592',
-  date: 'Jan 2026',
+  venue: 'Open Research Europe 6:324, version 1, CC BY 4.0, open peer review in progress · also an arXiv preprint (cs.LG)',
+  date: 'Sep 2026',
   bullets: [
-    'Co-authored a preprint introducing the first publicly available dataset linking Finnish railway operations with synchronized meteorological data, 2018 to 2024: approximately 38.5 million observations across the 5,915 km rail network and 209 weather stations.',
+    'Co-authored the article (published on Open Research Europe, also an arXiv preprint) introducing the first publicly available dataset linking Finnish railway operations with synchronized meteorological data, 2018 to 2024: approximately 38.5 million observations across the 5,915 km rail network and 209 weather stations.',
     "Established a baseline XGBoost model reaching 2.73-minute mean absolute error for station-level delay prediction, demonstrating the dataset's value for machine-learning applications in railway operations.",
   ],
-  href: 'https://arxiv.org/abs/2601.16592',
+  links: [
+    { label: 'DOI 10.12688/openreseurope.24750.1', href: 'https://doi.org/10.12688/openreseurope.24750.1' },
+    { label: 'arXiv 2601.16592', href: 'https://arxiv.org/abs/2601.16592' },
+  ],
 };
 
 /* Grants and funding. Amount and dates verbatim from the master CV; the
