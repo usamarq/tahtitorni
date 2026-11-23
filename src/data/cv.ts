@@ -2,6 +2,7 @@
    without checking the source. */
 
 export const experience = [
+  { years: '2026', role: 'Engineering Consultant, part-time', org: 'Prifina' },
   { years: '2025 - 2026', role: "AI Research Engineer, Master's Thesis", org: 'Valamis Group Oy' },
   { years: '2025', role: 'AI Research Intern', org: 'Centre for Wireless Communications, University of Oulu' },
   { years: '2023 - 2024', role: 'Technical Project Manager', org: 'ZeePalm' },
@@ -141,6 +142,14 @@ export const cvEducation = [
 ];
 
 export const cvRoles = [
+  {
+    role: 'Engineering Consultant (part-time)',
+    org: 'Prifina, Remote',
+    dates: 'Oct 2026 - Present',
+    bullets: [
+      'Working with the founders on product reliability across Souvéa, AI Twin and Spaces, and on partnerships with student networks.',
+    ],
+  },
   {
     role: "AI Research Engineer (Master's Thesis)",
     org: 'Valamis Group Oy, Finland',
